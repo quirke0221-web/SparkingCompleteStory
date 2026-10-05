@@ -83,7 +83,7 @@
 [2026-10-05 00:02:59] Post-initialization: GMalloc: 0x7ff7a1315ca8 -> 0x24e65261070
 [2026-10-05 00:02:59] Unreal Engine modules (non-modular):
 [2026-10-05 00:02:59] MainExe @ 0x7ff798bb0000 size=0x957f000
-[2026-10-05 00:02:59] 
+[2026-10-05 00:02:59]
 ##### MEMBER OFFSETS START #####
 
 [2026-10-05 00:02:59] UObjectBase::ClassPrivate = 0x10
@@ -371,7 +371,7 @@
 [2026-10-05 00:02:59] FSoftClassProperty::MetaClass = 0x80
 [2026-10-05 00:02:59] FInterfaceProperty::InterfaceClass = 0x78
 [2026-10-05 00:02:59] FFieldPathProperty::PropertyClass = 0x78
-[2026-10-05 00:02:59] 
+[2026-10-05 00:02:59]
 ##### MEMBER OFFSETS END #####
 
 [2026-10-05 00:02:59] m_shared_functions: 0x7ffd053ea770
