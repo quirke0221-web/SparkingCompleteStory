@@ -17,10 +17,31 @@ function Get-ProjectConfiguration {
     return $config
 }
 
+function Get-PipelineDirectories {
+    $projectRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
+    return @{
+        ProjectRoot          = $projectRoot
+        Staging              = Join-Path $projectRoot 'staging'
+        LegacyStaging        = Join-Path $projectRoot 'staging\legacy'
+        JsonStaging          = Join-Path $projectRoot 'staging\json'
+        ModifiedJsonStaging  = Join-Path $projectRoot 'staging\modified-json'
+        ContainerStaging     = Join-Path $projectRoot 'staging\container'
+        Dist                 = Join-Path $projectRoot 'dist'
+        RuntimeSource        = Join-Path $projectRoot 'src\runtime'
+    }
+}
+
 function Assert-File([string]$Path, [string]$Description) {
     if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) {
         throw "$Description was not found: $Path"
     }
+}
+
+function Ensure-CleanDirectory([string]$Path) {
+    if (Test-Path -LiteralPath $Path) {
+        Remove-Item -LiteralPath $Path -Recurse -Force
+    }
+    $null = New-Item -LiteralPath $Path -ItemType Directory -Force
 }
 
 function Invoke-Checked {
