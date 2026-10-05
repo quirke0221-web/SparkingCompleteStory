@@ -55,5 +55,21 @@ The resulting package is emitted to `dist/CompleteStory-v0.3-Unverum.zip` ready 
 Contributors and autonomous AI agents (Codex, Antigravity) must strictly obey the governance invariants in [`AGENTS.md`](AGENTS.md) and [`docs/commit.md`](docs/commit.md):
 1. **Clean Root Invariant:** Only `.gitignore`, `AGENTS.md`, and `README.md` may reside in the root.
 2. **File Length Ceiling:** Strictly **<= 300 lines max per file** across all code and documentation.
-3. **No Unapproved Code Changes:** Mandatory implementation planning gate before editing any source or config.
+3. **Intent Alignment Gate:** Plain-English conversational alignment before editing code; zero technical jargon traps.
 4. **Zero Slate Reflection:** Runtime hooks must never reflect transient Slate/UMG widgets across frames (ADR 0004).
+
+---
+
+## 4. How to Vibe-Code With Your Agent (Creator Playbook)
+
+You don't need coding experience or prompt engineering expertise to build mods with this harness. You act as the **Creative Director & Playtester**, while your AI agent (Codex, Antigravity) acts as your **Senior Technical Modder**.
+
+### How to Work With Your Agent:
+* **Give Natural Ideas:** Describe what you want in plain conversational English (e.g., *"I want Goku (Mini) to fight Raditz on Planet Namek instead of Earth"*, or *"The game crashed when I reached chapter 2, can you check the logs and fix it?"*).
+* **Confirm the Plan:** Your agent will reply with a plain-English summary of what it's building and what you will test. Simply reply *"Go for it"* or *"Looks good"*.
+* **Playtest & Report Back:** Once your agent finishes, it will build the mod and tell you what to verify in Sparking! ZERO. Launch the game, test the battle, and tell your agent what you observed!
+
+### What the Agent Handles Automatically:
+1. **Zero Tool Hallucination:** Uses audited, version-pinned skills (`retoc`, `UAssetGUI`, `RE-UE4SS`, `Unverum`) grounded in live source receipts.
+2. **Save Data Protection:** Guarantees non-destructive coexistence with the 12 vanilla character campaigns and user save data.
+3. **Automated Commit Discipline:** Automatically stages, commits, and pushes clean, conventional Git commits at every milestone, keeping the working tree clean and ready.

@@ -58,14 +58,21 @@ An agent is **strictly FORBIDDEN** from proposing or writing implementation code
 
 ---
 
-## 2. Mandatory Implementation Planning Gate (Zero Exceptions)
+## 2. Intent Alignment & Non-Technical Playtester Gate
 
-1. **No Unapproved Code Changes:**
-   * The agent is **strictly FORBIDDEN** from creating, editing, or deleting ANY source code or configuration files without first authoring an `implementation_plan.md` artifact and receiving the user's explicit, written approval in chat.
-2. **No "Quick Fix" Exemptions:**
-   * Even for trivial one-line bug fixes, syntax corrections, or minor tweaks, the agent **MUST NOT** touch code without presenting the diagnosis and diff in an implementation plan and waiting for explicit approval.
+1. **User Persona as Creative Director & Playtester:**
+   * The user guides project features, character story beats, and game balance, and validates behavior by playtesting in-game. The agent is responsible for technical execution, syntax, tool orchestration, and Git hygiene.
+   * Agents are **strictly FORBIDDEN** from demanding raw code diff reviews or asking intimidating technical programming questions. Communication must remain conversational, practical, and focused on player-facing outcomes.
+2. **Plain-English Intent Alignment (Zero Rogue Modifications):**
+   * Before modifying source code, game assets, or configuration, the agent must present a clear, conversational plan explaining:
+     - What feature or fix is being built.
+     - Which game components or files are affected.
+     - What the user will be able to test in Sparking! ZERO once completed.
+   * The agent must wait for the user's conversational sign-off (e.g. "Looks good", "Go ahead", "Let's do it") before editing code.
 3. **Strict Scope Creep Invariant:**
-   * The agent must never modify parameters outside the diagnosed issue without explicit justification and user sign-off in the plan.
+   * The agent must never modify game parameters, assets, or logic outside the agreed intent.
+4. **Verifiable In-Game Delivery:**
+   * Upon completing any milestone or bug fix, the agent must build and deploy the changes via `helpers/` and provide simple, step-by-step instructions for how the user can test the change in-game.
 
 ---
 
