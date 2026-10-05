@@ -1,46 +1,55 @@
-# Sparking ZERO: Complete Story
+# Dragon Ball Sparking! ZERO: Complete Story
 
-**Complete engineering handoff:** [COMPLETE_TECHNICAL_HANDOFF.md](COMPLETE_TECHNICAL_HANDOFF.md). Exact tested source/deltas are indexed in [history/README.md](history/README.md).
+[![Unreal Engine](https://img.shields.io/badge/Unreal_Engine-5.1.1_IoStore-black?logo=unrealengine)](https://www.unrealengine.com/)
+[![Target Build](https://img.shields.io/badge/Steam_Build-24953175-blue)]()
+[![Mod Manager](https://img.shields.io/badge/Distribution-Unverum-green)]()
 
-> **Authoritative status (2026-10-04):** v0.3 is the clean proven menu/asset baseline. The thirteenth entry appears in game but remains locked and routes to an unrelated NEO storefront. v0.7 crashes after unsafe panel reflection. No Complete Story Raditz launch or cross-character transition has been verified. Begin with [START_HERE.md](START_HERE.md); older sections below are retained as development history.
+An engineering project introducing an independent, non-destructive 13th Episode Battle campaign featuring **Goku (Mini)** into *Dragon Ball: Sparking! ZERO*, coexisting with the game's 12 stock character campaigns and preserving vanilla save data.
 
-Development project for adding a separate Complete Story option to Episode Battle while preserving the original 12 campaigns.
+---
 
-**Full handoff:** [COMPLETE_TECHNICAL_HANDOFF.md](COMPLETE_TECHNICAL_HANDOFF.md) contains the complete architecture, v0.1–v0.7 evidence, reproduction workflow, crash analysis, and next engineering directions. Exact historical source/deltas are indexed under [history/](history/README.md).
+## 1. Documentation Taxonomy (Single Source of Truth)
 
-## Current verified state
+All project documentation follows the strict governance lifecycle defined in [`AGENTS.md`](AGENTS.md):
 
-- The cooked v0.3 asset baseline adds a visible 13th **Complete Story** selection and preserves the original campaigns.
-- The character and chart registries contain the custom `0000_00` mapping, with the chart reusing Goku's `ChartData0000_00` and canonical Raditz opening references.
-- The game treats the custom campaign as locked because it lacks a native `CharacterPlayableData` state. Confirming it can invoke the unrelated NEO storefront fallback.
-- No released build currently provides a verified playable Complete Story campaign.
+* **[Product Requirements Document](docs/PRD.md):** Master product requirements, core campaign vision, and non-destructive invariants.
+* **[System Architecture](docs/ARCHITECTURE.md):** Subsystem decomposition across the asset build pipeline, runtime interception, packaging, and save coexistence.
+* **[Build & Testing Runbook](docs/BUILD.md):** Prerequisites, single-cmdlet build instructions, local developer deployment, and verification protocol.
+* **[Architectural Decision Records (ADRs)](docs/ADRs/):** Settled architectural decisions:
+  * `0001`: Git as Single Source of Truth & Retirement of Manual Version Folders
+  * `0002`: Dependency Boundaries & Delegation to Community Mod Management (Unverum)
+  * `0003`: Separation of Concerns in Asset Pipeline (Orchestrator vs. Pure Transformation)
+  * `0004`: Strict Ban on Transient Slate Widget Reflection in Runtime Scripting
+  * `0005`: Documentation Taxonomy, Knowledge Consolidation, and Clean Root Standard
+* **[Dependency Matrix & Reference Vault](docs/dependencies/dependencies.md):** Pinned tool versions (`retoc`, `UAssetGUI`, `RE-UE4SS`, `Unverum`, `UTOC Bypass`) and source receipts.
+* **[Empirical Research Vault](docs/research/):**
+  * `asset-data-dictionary.md`: Reverse-engineered `PtrRecords` struct offsets, event pointers, and save structures.
+  * `legacy-iteration-history.md`: Complete v0.1–v0.7 failure post-mortems and "Do Not Repeat" matrix.
+  * `asset-inventory.csv`: Tabular inventory of game package paths and classes.
+  * `sparking-zero-modding-ecosystem.md`: Verified community case studies (AccessForge, WistfulHopes).
 
-## Current runtime experiment
+---
 
-The active experiment is `runtime/v0.7/CompleteStory/Scripts/main.lua`.
+## 2. Quickstart: Building the Mod
 
-Delayed installation of the `SSDragonAdventureIFCSManager::IsPlayable` hook prevents the earlier startup exit. Entering Episode Battle still crashes after the callback inspects the six character-panel objects.
+Complete Story uses a single, parameterized orchestrator that coordinates `retoc` and `UAssetGUI` across 6 automated stages:
 
-The recorded panel values were:
+```powershell
+# 1. Ensure local config is set in config/project.local.psd1 and AES key is in environment
+$env:SPARKING_ZERO_AES_KEY = "0x..."
 
-```text
--3/6,-2/4,-1/2,1/2,2/4,3/6
+# 2. Build the complete IoStore container and Unverum release package
+.\scripts\Build-CompleteStory.ps1
 ```
 
-These are relative carousel positions, not campaign registry indices. Comparing them with registry index `12` is invalid. The v0.7 script is retained as a failing diagnostic reproduction, not as a working release.
+The resulting package is emitted to `dist/CompleteStory-v0.3-Unverum.zip` ready for one-click installation via **Unverum**.
 
-## Next development task
+---
 
-Remove all panel-object reflection from the `IsPlayable` callback and identify the selected campaign through stable manager/native state. Do not restore the old F8/F9 hotkey prototype or globally override playability.
+## 3. Engineering Guardrails
 
-## Repository scope
-
-This repository contains source code, build scripts, metadata inventories, and investigation notes. It intentionally excludes extracted game assets, cooked packages, saves, AES keys, third-party executables, build output, and ZIP distributions.
-
-Older investigation documents describe the state at the time they were written. This README is the authoritative current status.
-
-## Complete development history
-
-All project-created Lua prototypes and runtime experiments are retained. Superseded implementations are under `archive/legacy`, with their original files intact and clearly labeled so they cannot be confused with the current experiment.
-
-Packaging metadata and release notes are retained under `packaging` and `archive/release-notes`. Generated containers and extracted/cooked game assets remain local-only.
+Contributors and autonomous AI agents (Codex, Antigravity) must strictly obey the governance invariants in [`AGENTS.md`](AGENTS.md) and [`docs/commit.md`](docs/commit.md):
+1. **Clean Root Invariant:** Only `.gitignore`, `AGENTS.md`, and `README.md` may reside in the root.
+2. **File Length Ceiling:** Strictly **<= 300 lines max per file** across all code and documentation.
+3. **No Unapproved Code Changes:** Mandatory implementation planning gate before editing any source or config.
+4. **Zero Slate Reflection:** Runtime hooks must never reflect transient Slate/UMG widgets across frames (ADR 0004).
