@@ -58,15 +58,16 @@ Every commit message consists of a **Header**, an optional **Body**, and an opti
 
 To ensure consistency across human engineers and AI agents (Codex, Antigravity), use strictly the following scopes:
 
-* `(governance)`: Agent rules (`AGENTS.md`), commit standards (`docs/commit.md`).
+* `(governance)`: Agent rules (`AGENTS.md`), commit standards (`docs/commit.md`), and workflow runbooks (`docs/git-workflow.md`).
 * `(skills)`: Autonomous agent skills (`.agents/skills/*`).
 * `(deps)`: Dependency matrix and primary source reference vault (`docs/dependencies/*`).
 * `(prd)`: Product requirements and scope specifications (`docs/PRD.md`).
 * `(adr)`: Architectural Decision Records (`docs/ADRs/*`).
 * `(research)`: Empirical ecosystem and legacy codebase investigations (`docs/research/*`).
-* `(pipeline)`: Master build orchestrator and packaging scripts (`scripts/Build-*.ps1`).
-* `(assets)`: Asset transformation and JSON manipulation logic (`scripts/Transform-*.ps1`).
-* `(runtime)`: RE-UE4SS Lua scripts and game engine hooks (`src/runtime/*`).
+* `(pipeline)`: Master build orchestrator and packaging scripts (`helpers/Build-*.ps1`).
+* `(assets)`: Asset transformation and JSON manipulation logic (`helpers/Transform-*.ps1`).
+* `(runtime)`: RE-UE4SS Lua scripts and game engine hooks (`CompleteStory/scripts/*`).
+* `(helpers)`: Development, staging, and deployment helper utilities (`helpers/*`).
 * `(config)`: Project-level settings and path manifests (`config/*`).
 
 ---

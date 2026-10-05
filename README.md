@@ -15,6 +15,8 @@ All project documentation follows the strict governance lifecycle defined in [`A
 * **[Product Requirements Document](docs/PRD.md):** Master product requirements, core campaign vision, and non-destructive invariants.
 * **[System Architecture](docs/ARCHITECTURE.md):** Subsystem decomposition across the asset build pipeline, runtime interception, packaging, and save coexistence.
 * **[Build & Testing Runbook](docs/BUILD.md):** Prerequisites, single-cmdlet build instructions, local developer deployment, and verification protocol.
+* **[Git Workflow & Turn-Boundary Cadence](docs/git-workflow.md):** Autonomous commit protocol, turn-boundary hygiene, and rollback procedures.
+* **[Commit Standards & Taxonomy](docs/commit.md):** Conventional Commits 1.0.0 rules, header formatting, and architectural scopes.
 * **[Architectural Decision Records (ADRs)](docs/ADRs/):** Settled architectural decisions:
   * `0001`: Git as Single Source of Truth & Retirement of Manual Version Folders
   * `0002`: Dependency Boundaries & Delegation to Community Mod Management (Unverum)
