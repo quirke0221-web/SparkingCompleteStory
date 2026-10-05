@@ -1,0 +1,11 @@
+[2026-10-05 00:02:54] UE4SS - v3.0.1 Beta #0 - Git SHA #4e5461c
+[2026-10-05 00:02:55] Found EngineVersion: 5.1
+[2026-10-05 00:02:59] Mod 'CompleteStory' has enabled.txt, starting mod.
+[2026-10-05 00:02:59] [Lua] [CompleteStory v0.7-dev] mod initialized; delayed safe hook scheduled for 60000 ms
+[2026-10-05 00:04:00] [RegisterHook] Registered native hook (1, 2) for Function /Script/SS.SSDragonAdventureIFCSManager:IsPlayable
+[2026-10-05 00:04:00] [Lua] [CompleteStory v0.7-dev] IsPlayable hook installed on game thread (ids=1,2)
+[2026-10-05 00:12:23] [Lua] [CompleteStory v0.7-dev] IsPlayable callback entered
+[2026-10-05 00:12:23] [Lua] [CompleteStory v0.7-dev] panel Index/ShowNum slots 0..5: -3/6,-2/4,-1/2,1/2,2/4,3/6
+
+# No later Complete Story line exists in the retained log. The game crashed after this point.
+# Absolute local paths and unrelated UE4SS initialization output were removed.
