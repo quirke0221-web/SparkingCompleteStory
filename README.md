@@ -40,7 +40,7 @@ Complete Story uses a single, parameterized orchestrator that coordinates `retoc
 $env:SPARKING_ZERO_AES_KEY = "0x..."
 
 # 2. Build the complete IoStore container and Unverum release package
-.\scripts\Build-CompleteStory.ps1
+.\helpers\Build-CompleteStory.ps1
 ```
 
 The resulting package is emitted to `dist/CompleteStory-v0.3-Unverum.zip` ready for one-click installation via **Unverum**.

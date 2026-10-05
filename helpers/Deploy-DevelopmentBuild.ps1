@@ -31,7 +31,7 @@ $dirs   = Get-PipelineDirectories
 if (-not $BuildDirectory) { $BuildDirectory = $dirs.Dist }
 $pakTarget     = Join-Path $config.GameRoot 'SparkingZERO\Content\Paks\~mods\CompleteStory'
 $runtimeTarget = Join-Path $config.GameRoot 'SparkingZERO\Binaries\Win64\Mods\CompleteStory'
-$runtimeSource = Join-Path $PSScriptRoot '..\runtime\CompleteStory'
+$runtimeSource = Join-Path $PSScriptRoot '..\CompleteStory'
 $pakFiles      = @('CompleteStory_P.pak', 'CompleteStory_P.utoc', 'CompleteStory_P.ucas')
 
 if ($Install) {

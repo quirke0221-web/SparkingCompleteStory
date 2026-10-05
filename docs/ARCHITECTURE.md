@@ -32,7 +32,7 @@ flowchart TB
         end
 
         subgraph Subsystem3["3. Runtime Interception"]
-            UE4SSHook["src/runtime/CompleteStory/main.lua"]
+            UE4SSHook["CompleteStory/scripts/main.lua"]
             NativeInterceptor["IsPlayable() GameThread Hook"]
         end
     end
@@ -63,9 +63,9 @@ The architecture is decomposed into four discrete, single-responsibility subsyst
 
 ```text
 COMPLETE STORY SYSTEM
-├── Subsystem 1: Asset Build Pipeline       (scripts/Build-CompleteStory.ps1)
+├── Subsystem 1: Asset Build Pipeline       (helpers/Build-CompleteStory.ps1)
 ├── Subsystem 2: Packaging & Distribution   (dist/CompleteStory-v0.3-Unverum.zip)
-├── Subsystem 3: Runtime Interception       (src/runtime/CompleteStory/main.lua)
+├── Subsystem 3: Runtime Interception       (CompleteStory/scripts/main.lua)
 └── Subsystem 4: Save & Coexistence Layer   (Isolated Memory Hooking)
 ```
 
@@ -112,7 +112,7 @@ sequenceDiagram
 
 ### 2.3 Subsystem 3: Runtime Interception (RE-UE4SS Lua)
 * **Execution Environment:** RE-UE4SS v3.0.1 Beta (`4e5461c`) embedded in the game process.
-* **Component Path:** `src/runtime/CompleteStory/main.lua`
+* **Component Path:** `CompleteStory/scripts/main.lua`
 * **Interception Architecture:**
   * Hooks the native parameterless UFunction `SSDragonAdventureIFCSManager::IsPlayable()`.
   * Evaluates whether the currently focused campaign route corresponds to `0000_00`.
@@ -140,8 +140,8 @@ sequenceDiagram
 | **Requirements** | Master Mod Scope & Vision | Markdown (`docs/PRD.md`) | `docs/PRD.md` |
 | **Asset Extract & Pack** | IoStore Container Packaging | retoc v0.1.5 CLI (Rust) | `docs/dependencies/retoc/` |
 | **Asset Serialization** | UAsset Binary <-> JSON | UAssetGUI v1.1.0 CLI (C#) | `docs/dependencies/uassetgui/` |
-| **Asset Domain Logic** | JSON AST Transformation | PowerShell 7 / Windows PowerShell | `scripts/Transform-CompleteStoryAssets.ps1` |
-| **Pipeline Automation** | Master Build Orchestration | PowerShell (`scripts/Build-CompleteStory.ps1`) | `docs/ADRs/0003` |
+| **Asset Domain Logic** | JSON AST Transformation | PowerShell 7 / Windows PowerShell | `helpers/Transform-CompleteStoryAssets.ps1` |
+| **Pipeline Automation** | Master Build Orchestration | PowerShell (`helpers/Build-CompleteStory.ps1`) | `docs/ADRs/0003` |
 | **Runtime Interception** | Native UFunction Hooking | RE-UE4SS v3.0.1 Beta (Lua 5.4) | `docs/dependencies/ue4ss/` & `docs/ADRs/0004` |
 | **Mod Management** | Distribution & Load Ordering | Unverum Mod Manager | `docs/dependencies/unverum/` & `docs/ADRs/0002` |
 | **Engine Target** | Host Executable Environment | Unreal Engine 5.1.1 (Zen / IoStore) | Steam Build `24953175` |
@@ -150,6 +150,6 @@ sequenceDiagram
 
 ## 4. Verification & Quality Attributes
 
-1. **Deterministic Buildability:** Running `.\scripts\Build-CompleteStory.ps1` from a clean clone with valid prerequisites produces a bit-for-bit verified container passing `retoc verify`.
+1. **Deterministic Buildability:** Running `.\helpers\Build-CompleteStory.ps1` from a clean clone with valid prerequisites produces a bit-for-bit verified container passing `retoc verify`.
 2. **Crash Immunity:** Zero dereferencing of transient Slate widget memory; zero native access violations (`0xC0000005`).
 3. **Maintainability Ceiling:** Every implementation script and documentation file strictly adheres to the **<= 300 lines ceiling** (`AGENTS.md` §0.4).

@@ -16,5 +16,5 @@ Authoritative runtime scripting component for the **Sparking ZERO: Complete Stor
 ## Deployment
 - Staged automatically to `<GameRoot>\SparkingZERO\Binaries\Win64\Mods\CompleteStory` via:
   ```powershell
-  .\scripts\Deploy-DevelopmentBuild.ps1 -Install
+  .\helpers\Deploy-DevelopmentBuild.ps1 -Install
   ```

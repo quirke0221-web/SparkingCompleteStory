@@ -42,13 +42,13 @@ $env:SPARKING_ZERO_AES_KEY = "0x..." # Your authorized game key
 Build the entire mod with one unified orchestrator cmdlet:
 
 ```powershell
-.\scripts\Build-CompleteStory.ps1
+.\helpers\Build-CompleteStory.ps1
 ```
 
 ### 2.1 The 6 Automated Pipeline Stages
 1. **Stage 1 (Extract Stock Assets):** Invokes `retoc to-legacy` with targeted filters to extract `DragonAdventureIFData`, `DragonAdventureIFChartData`, and Goku's `DAIF_CharaData_0000_00` into `staging/legacy/`.
 2. **Stage 2 (Deserialize to JSON):** Invokes `UAssetGUI tojson` with `VER_UE5_1` and `SparkingZERO.usmap` into `staging/json/`.
-3. **Stage 3 (Pure Domain Transformation):** Calls `scripts/Transform-CompleteStoryAssets.ps1` to splice route `0000_00` into character and chart registries and clone Goku's data into `DAIF_CharaData_CompleteStory` in `staging/modified-json/`.
+3. **Stage 3 (Pure Domain Transformation):** Calls `helpers/Transform-CompleteStoryAssets.ps1` to splice route `0000_00` into character and chart registries and clone Goku's data into `DAIF_CharaData_CompleteStory` in `staging/modified-json/`.
 4. **Stage 4 (Recompile to UAsset):** Invokes `UAssetGUI fromjson` to serialize modified assets into `staging/container/`. Copies `scriptobjects.bin`.
 5. **Stage 5 (Pack IoStore Container):** Invokes `retoc to-zen --version UE5_1` to compile `staging/container/` into `dist/CompleteStory_P.{pak,utoc,ucas}`, then runs `retoc verify`.
 6. **Stage 6 (Package for Unverum):** Bundles container files into `dist/CompleteStory-v0.3-Unverum.zip`.
@@ -56,7 +56,7 @@ Build the entire mod with one unified orchestrator cmdlet:
 ### 2.2 Rebuild Acceleration
 If stock assets are already extracted in `staging/legacy/`, skip re-extraction:
 ```powershell
-.\scripts\Build-CompleteStory.ps1 -SkipExtraction
+.\helpers\Build-CompleteStory.ps1 -SkipExtraction
 ```
 
 ---
@@ -68,13 +68,13 @@ For testing locally without Unverum, use the developer deployment utility:
 ### Install Development Build
 ```powershell
 # Backs up any existing installation and copies dist/ container files to ~mods\CompleteStory\
-.\scripts\Deploy-DevelopmentBuild.ps1 -Install
+.\helpers\Deploy-DevelopmentBuild.ps1 -Install
 ```
 
 ### Uninstall Development Build
 ```powershell
 # Verifies a restorable backup in local-handoff/deploy-backups/ and removes ~mods\CompleteStory\
-.\scripts\Deploy-DevelopmentBuild.ps1 -Uninstall
+.\helpers\Deploy-DevelopmentBuild.ps1 -Uninstall
 ```
 
 ---
