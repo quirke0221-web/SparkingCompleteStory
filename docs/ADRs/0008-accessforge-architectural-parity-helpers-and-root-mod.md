@@ -11,7 +11,7 @@ Following the consolidation of legacy prototypes in ADR 0007, two architectural 
    * Mod `scripts/` (`runtime/CompleteStory/scripts/`): Lua code executing inside Unreal Engine 5 memory via RE-UE4SS during gameplay.
    This collision caused persistent confusion regarding which runtime environment executed which code.
 
-Audit of the primary community case study, **AccessForge (`SparkingZeroAccess`)**, revealed how experienced mod authors structure hybrid UE4SS projects:
+Audit of the primary community case study, **[AccessForge (`SparkingZeroAccess`)](../research/case-studies/accessforge.md)**, revealed how experienced mod authors structure hybrid UE4SS projects:
 * The mod folder lives directly at the root (`SparkingZeroAccess/`), matching the exact directory dropped into `Win64\Mods\`.
 * External build, packaging, and data scripts live in `helpers/`, completely avoiding any collision with in-game Lua scripts.
 

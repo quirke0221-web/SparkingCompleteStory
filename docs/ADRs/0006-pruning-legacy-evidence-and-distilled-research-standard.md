@@ -18,7 +18,7 @@ While these files represented the incremental steps of earlier exploration, they
 2. **Distilled Research Standard:** Maintain strictly three high-signal, authoritative research documents in `docs/research/`:
    * `asset-data-dictionary.md`: Active technical blueprint containing verified C++ symbols, struct offsets (`0x40`), save structures, and Raditz start pointers.
    * `legacy-iteration-history.md`: Anti-regression shield documenting what failed in v0.1–v0.7 and the "Do Not Repeat" matrix.
-   * `sparking-zero-modding-ecosystem.md`: Verified community case studies (AccessForge, WistfulHopes) proving safe UE4SS hooking.
+   * `case-studies/`: Modular community case studies (`sparking-zero-modding-ecosystem.md`, `accessforge.md`, `wistfulhopes.md`) proving safe UE4SS hooking and IoStore patching.
 3. **Zero Digital Hoarding Invariant:** Do not hoard intermediate test logs, raw memory dumps, or obsolete file hashes in Git when their insights have already been codified into production code, skills, or settled ADRs.
 
 ## Consequences

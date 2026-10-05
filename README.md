@@ -30,7 +30,10 @@ All project documentation follows the strict governance lifecycle defined in [`A
 * **[Empirical Research Vault](docs/research/):**
   * `asset-data-dictionary.md`: Reverse-engineered `PtrRecords` struct offsets, event pointers, and save structures.
   * `legacy-iteration-history.md`: Complete v0.1–v0.7 failure post-mortems and "Do Not Repeat" matrix.
-  * `sparking-zero-modding-ecosystem.md`: Verified community case studies (AccessForge, WistfulHopes).
+  * **[Case Studies Vault](docs/research/case-studies/):**
+    * [`sparking-zero-modding-ecosystem.md`](docs/research/case-studies/sparking-zero-modding-ecosystem.md): Engine architecture and primary toolchain map.
+    * [`accessforge.md`](docs/research/case-studies/accessforge.md): Structural parity, `helpers/` isolation, and safe GameThread hooking.
+    * [`wistfulhopes.md`](docs/research/case-studies/wistfulhopes.md): Zen IoStore container packaging, `_P` patch priority, and clean distribution.
 
 ---
 
