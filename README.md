@@ -22,6 +22,7 @@ All project documentation follows the strict governance lifecycle defined in [`A
   * `0004`: Strict Ban on Transient Slate Widget Reflection in Runtime Scripting
   * `0005`: Documentation Taxonomy, Knowledge Consolidation, and Clean Root Standard
   * `0006`: Pruning Legacy Evidence Debris & Distilled Research Standard
+  * `0007`: Runtime Scripting Module Consolidation & GameThread Safety
 * **[Dependency Matrix & Reference Vault](docs/dependencies/dependencies.md):** Pinned tool versions (`retoc`, `UAssetGUI`, `RE-UE4SS`, `Unverum`, `UTOC Bypass`) and source receipts.
 * **[Empirical Research Vault](docs/research/):**
   * `asset-data-dictionary.md`: Reverse-engineered `PtrRecords` struct offsets, event pointers, and save structures.
