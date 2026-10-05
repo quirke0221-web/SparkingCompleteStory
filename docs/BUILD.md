@@ -53,10 +53,15 @@ Build the entire mod with one unified orchestrator cmdlet:
 5. **Stage 5 (Pack IoStore Container):** Invokes `retoc to-zen --version UE5_1` to compile `staging/container/` into `dist/CompleteStory_P.{pak,utoc,ucas}`, then runs `retoc verify`.
 6. **Stage 6 (Package for Unverum):** Bundles container files into `dist/CompleteStory-v0.3-Unverum.zip`.
 
-### 2.2 Rebuild Acceleration
+### 2.2 Rebuild Acceleration & One-Step Deployment
 If stock assets are already extracted in `staging/legacy/`, skip re-extraction:
 ```powershell
 .\helpers\Build-CompleteStory.ps1 -SkipExtraction
+```
+
+To build and immediately deploy both container and runtime mod to the game in a single command:
+```powershell
+.\helpers\Build-CompleteStory.ps1 -SkipExtraction -Deploy
 ```
 
 ---
@@ -88,3 +93,16 @@ Before running in-game tests:
    * **Gate 1 (Tile Presentation):** Verify all 12 stock characters remain selectable and the 13th "Complete Story" tile appears.
    * **Gate 2 (Interaction):** Confirm tile selection.
    * **Gate 3 (Launch):** Verify transition into Goku's Raditz opening battle without native exceptions.
+
+---
+
+## 5. Automated Crash & Log Diagnostics
+
+If the game crashes, freezes, or encounters an error during testing, inspect logs immediately:
+```powershell
+# Tails the last 50 lines of ue4ss.log, SparkingZERO.log, and recent crash dumps
+.\helpers\Get-ModLogs.ps1
+
+# Inspect strictly error, fatal, and access violation patterns
+.\helpers\Get-ModLogs.ps1 -ErrorsOnly
+```

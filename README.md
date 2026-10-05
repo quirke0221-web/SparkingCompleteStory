@@ -42,11 +42,11 @@ Complete Story uses a single, parameterized orchestrator that coordinates `retoc
 # 1. Ensure local config is set in config/project.local.psd1 and AES key is in environment
 $env:SPARKING_ZERO_AES_KEY = "0x..."
 
-# 2. Build the complete IoStore container and Unverum release package
-.\helpers\Build-CompleteStory.ps1
+# 2. Build the complete IoStore container and deploy directly to game folder:
+.\helpers\Build-CompleteStory.ps1 -Deploy
 ```
 
-The resulting package is emitted to `dist/CompleteStory-v0.3-Unverum.zip` ready for one-click installation via **Unverum**.
+The resulting package is emitted to `dist/CompleteStory-v0.3-Unverum.zip` ready for one-click installation via **Unverum**, and automatically staged into your local game folder when `-Deploy` is used.
 
 ---
 
@@ -65,11 +65,14 @@ Contributors and autonomous AI agents (Codex, Antigravity) must strictly obey th
 You don't need coding experience or prompt engineering expertise to build mods with this harness. You act as the **Creative Director & Playtester**, while your AI agent (Codex, Antigravity) acts as your **Senior Technical Modder**.
 
 ### How to Work With Your Agent:
-* **Give Natural Ideas:** Describe what you want in plain conversational English (e.g., *"I want Goku (Mini) to fight Raditz on Planet Namek instead of Earth"*, or *"The game crashed when I reached chapter 2, can you check the logs and fix it?"*).
+* **Give Natural Ideas:** Describe what you want in plain conversational English (e.g., *"I want Goku (Mini) to fight Raditz on Planet Namek instead of Earth"*).
 * **Confirm the Plan:** Your agent will reply with a plain-English summary of what it's building and what you will test. Simply reply *"Go for it"* or *"Looks good"*.
-* **Playtest & Report Back:** Once your agent finishes, it will build the mod and tell you what to verify in Sparking! ZERO. Launch the game, test the battle, and tell your agent what you observed!
+* **Playtest & Report Back:** Once your agent finishes, it runs `Build -Deploy` and tells you what to verify in Sparking! ZERO. Launch the game, test the battle, and tell your agent what you observed!
+* **Report Bugs in Plain English:** If the game crashes, freezes, or glitches, just tell your agent (e.g., *"It crashed when I defeated Raditz, can you check what happened?"*). Your agent will run `.\helpers\Get-ModLogs.ps1`, read the crash stack directly, and fix the issue.
 
 ### What the Agent Handles Automatically:
 1. **Zero Tool Hallucination:** Uses audited, version-pinned skills (`retoc`, `UAssetGUI`, `RE-UE4SS`, `Unverum`) grounded in live source receipts.
-2. **Save Data Protection:** Guarantees non-destructive coexistence with the 12 vanilla character campaigns and user save data.
-3. **Automated Commit Discipline:** Automatically stages, commits, and pushes clean, conventional Git commits at every milestone, keeping the working tree clean and ready.
+2. **One-Step Build & Deploy:** Rebuilds assets and stages containers and Lua scripts directly into your game with `helpers/Build-CompleteStory.ps1 -Deploy`.
+3. **Autonomous Crash Diagnostics:** Diagnoses game crashes and Lua errors directly from `ue4ss.log` and Unreal Engine crash dumps using `helpers/Get-ModLogs.ps1`.
+4. **Save Data Protection:** Guarantees non-destructive coexistence with the 12 vanilla character campaigns and user save data.
+5. **Automated Commit Discipline:** Automatically stages, commits, and pushes clean, conventional Git commits at every milestone, keeping the working tree clean and ready.

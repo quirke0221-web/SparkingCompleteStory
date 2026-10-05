@@ -94,12 +94,14 @@ The mod build and packaging lifecycle is coordinated end-to-end by [`helpers/Bui
 
 ---
 
-## 5. Pipeline Post-Flight Checklist
+## 5. Pipeline Post-Flight Checklist & Diagnostics
 
 - [ ] All 3 container files (`.pak`, `.utoc`, `.ucas`) generated in `dist/`.
 - [ ] `retoc verify` outputs `verified`.
 - [ ] Staging logs confirm 0 skipped assets (every `.uasset` had its matching `.uexp`).
+- [ ] Staged to local game for testing via `helpers/Build-CompleteStory.ps1 -Deploy`.
 - [ ] In-game smoke test: Game boots, stock 12 campaigns remain accessible, and custom campaign mounts without crashes.
+- [ ] Diagnostic Triage: If an in-game crash, freeze, or exception occurs during testing, run `helpers/Get-ModLogs.ps1` to inspect `ue4ss.log` and Unreal crash dumps directly.
 
 ---
 
