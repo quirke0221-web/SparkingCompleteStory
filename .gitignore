@@ -1,0 +1,44 @@
+# Extracted/cooked game content and generated build output
+/build/
+/decode_input/
+/work/
+/dist/
+/tools/
+/test_backups/
+/backup save/
+/backup save.zip
+
+# Packaged Unreal/IoStore artifacts
+*.pak
+*.ucas
+*.utoc
+*.sig
+*.uasset
+*.uexp
+*.ubulk
+*.bin
+pakstore.json
+
+# Archives, binaries, saves, diagnostics, and local configuration
+*.zip
+*.7z
+*.rar
+*.exe
+*.dll
+*.dmp
+*.log
+*SaveData*
+.env
+.env.*
+*.local.ini
+aes*.txt
+*aes*key*
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+desktop.ini
+.vs/
+.vscode/
+*.user
+*.suo
