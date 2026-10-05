@@ -20,6 +20,9 @@
 6. **Currency & Formatting Rules:**
    * In chat: Always escape dollar signs (`\$1.00`) or wrap in backticks (`$1.00`).
    * In files & artifacts: Always use clean, unescaped dollar signs (`$1.00`).
+7. **Authoritative Execution Domains (ADR 0008):**
+   * **PowerShell Build Automation:** Exclusively located in `helpers/` (`Build-CompleteStory.ps1`, `Transform-CompleteStoryAssets.ps1`, `Deploy-DevelopmentBuild.ps1`). Any references to old root-level `scripts/*.ps1`, `runtime/v0.7/`, or `mods/` in chat history are retired legacy artifacts.
+   * **In-Game UE4SS Mod:** Exclusively located in `CompleteStory/` (with its active Lua entry point at `CompleteStory/scripts/main.lua`). Never treat `CompleteStory/scripts/` as legacy; it is the active UE4SS mod required by the game engine.
 
 ---
 
