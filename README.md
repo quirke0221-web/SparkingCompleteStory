@@ -32,3 +32,9 @@ Remove all panel-object reflection from the `IsPlayable` callback and identify t
 This repository contains source code, build scripts, metadata inventories, and investigation notes. It intentionally excludes extracted game assets, cooked packages, saves, AES keys, third-party executables, build output, and ZIP distributions.
 
 Older investigation documents describe the state at the time they were written. This README is the authoritative current status.
+
+## Complete development history
+
+All project-created Lua prototypes and runtime experiments are retained. Superseded implementations are under `archive/legacy`, with their original files intact and clearly labeled so they cannot be confused with the current experiment.
+
+Packaging metadata and release notes are retained under `packaging` and `archive/release-notes`. Generated containers and extracted/cooked game assets remain local-only.
