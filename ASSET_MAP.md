@@ -1,5 +1,7 @@
 # Complete Story — Episode Battle Asset Map
 
+> Verified asset inventory from the initial investigation. Runtime conclusions are updated in `docs/ARCHITECTURE.md`.
+
 Updated: 2026-10-02
 
 Evidence sources are the build-24953175 IoStore index and targeted FModel views,

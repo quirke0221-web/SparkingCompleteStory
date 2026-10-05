@@ -1,5 +1,7 @@
 # Packaging Blocker — Resolved
 
+> Historical artifact. Packaging was resolved; the current blocker is native playability and menu routing.
+
 Date resolved: 2026-10-02
 
 The original blocker was authorized read-only access to the encrypted stock

@@ -1,8 +1,10 @@
 # Complete Story — Project State
 
-Last updated: 2026-10-02
+> **Superseded historical snapshot.** This file originally described the pre-runtime v0.1 state and is retained for provenance. Current status: v0.3 displays the thirteenth entry while preserving the original twelve; the custom identity remains locked; v0.7 crashes; Raditz has never launched through Complete Story; cross-character progression is not implemented. See [START_HERE.md](START_HERE.md).
 
-## Current status
+Historical snapshot date: 2026-10-02
+
+## Historical v0.1 status (superseded)
 
 A normal UE5.1 IoStore prototype has been built and verified offline:
 
@@ -12,7 +14,7 @@ An Unverum-ready archive is at:
 
 `dist/CompleteStory-v0.1-Unverum.zip`
 
-The mod has not been installed or run. It is an in-game test candidate, not a
+At that time the mod had not been installed or run. It was an in-game test candidate, not a
 claim that the thirteenth menu item renders or that save initialization works.
 The game installation, installed mods, and saves remain unchanged.
 
@@ -54,7 +56,7 @@ Archive hashes are recorded in
 `dist/CompleteStory-v0.1/SHA256SUMS.txt`. The Unverum zip SHA-256 is
 `62A6B4924E066AAE46920B9992AFFF6D061945AD1799BD77790510CF3C180506`.
 
-## Remaining runtime gates
+## Historical pre-test runtime gates
 
 1. Confirm the selector renders/navigates a thirteenth item. Prior inspection
    found six reusable panels and dynamic-looking navigation, but no offline test
@@ -64,7 +66,7 @@ Archive hashes are recorded in
 4. Observe whether save initialization, route-clear totals, or trophies treat
    `0000_00` safely as an additional campaign identity.
 
-## Next smallest task
+## Historical next task (subsequently performed)
 
 Perform the single backed-up-save test in
 `dist/CompleteStory-v0.1/README.md`, then report the selector and launch result.

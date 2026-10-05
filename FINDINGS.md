@@ -1,5 +1,7 @@
 # Complete Story — Findings
 
+> **Historical investigation record.** Some conclusions below predate later runtime tests. Current conclusions are in `START_HERE.md`, `docs/ARCHITECTURE.md`, and `docs/VERSION_HISTORY.md`.
+
 Packaged-asset implementation attempt: 2026-10-02
 
 ## Packaging result

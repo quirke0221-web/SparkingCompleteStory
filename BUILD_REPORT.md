@@ -1,5 +1,7 @@
 # Complete Story v0.1 — Offline Build Report
 
+> Historical artifact. Offline success did not establish runtime playability; see `START_HERE.md`.
+
 Build date: 2026-10-02
 
 ## Output

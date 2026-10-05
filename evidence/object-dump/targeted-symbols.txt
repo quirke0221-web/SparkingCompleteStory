@@ -1,0 +1,32 @@
+Source: local UE4SS_ObjectDump.txt from Steam build 24953175. Full dump excluded.
+
+5659  Class /Script/SS.SSMenuManager
+13869 Class /Script/SS.SSBuiltInMenu
+13870 MulticastInlineDelegateProperty /Script/SS.SSBuiltInMenu:OnDecided
+13872 ArrayProperty /Script/SS.SSBuiltInMenu:EntryItems
+17515 Class /Script/SS.SSDragonAdventureIFCSManager
+17516 ObjectProperty /Script/SS.SSDragonAdventureIFCSManager:BuiltInMenu
+42331 DelegateFunction /Script/SS.OnSSBuiltInMenuDecidedEvent__DelegateSignature
+42332 IntProperty ...:InIndex
+42333 StructProperty ...:InItem
+46361 Enum /Script/SS.EKoratUnLockMode
+46362 EKoratUnLockMode::Lock = 0
+46363 EKoratUnLockMode::New = 1
+46364 EKoratUnLockMode::Checked = 2
+46365 EKoratUnLockMode::CheckedLock = 3
+72869 EnumProperty /Script/SS.SSDragonAdventureIFCharacterPlayableSaveData:UnlockInfo
+72921 MapProperty /Script/SS.SSDragonAdventureIFSaveData:CharacterPlayableData
+72922 CharacterPlayableData key struct FKoratCharacterDataList
+72923 CharacterPlayableData value struct FSSDragonAdventureIFCharacterPlayableSaveData
+100423 Function /Script/SS.SSBuiltInMenu:DecideButton
+100425 Function /Script/SS.SSBuiltInMenu:NewDecideButton
+102939 Function /Script/SS.SSDragonAdventureIFCSManager:IsModeStart
+102941 Function /Script/SS.SSDragonAdventureIFCSManager:IsPlayable
+102942 BoolProperty /Script/SS.SSDragonAdventureIFCSManager:IsPlayable:ReturnValue
+102944 Function /Script/SS.SSDragonAdventureIFCSManager:OnListDown
+102945 Function /Script/SS.SSDragonAdventureIFCSManager:OnListUp
+
+Reproduce with:
+  rg -n "SSDragonAdventureIFCSManager|CharacterPlayableData|UnlockInfo|EKoratUnLockMode|SSBuiltInMenu|SSMenuManager" UE4SS_ObjectDump.txt
+
+These lines prove reflected types/signatures, not native function bodies or control flow.

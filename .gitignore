@@ -6,6 +6,9 @@
 /tools/
 /test_backups/
 /backup save/
+/config/project.local.psd1
+/evidence/private/
+/local-handoff/
 /backup save.zip
 
 # Abandoned runtime prototypes retained locally for reference only
