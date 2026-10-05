@@ -27,6 +27,7 @@ function Invoke-Checked {
     param([string]$FilePath, [string[]]$Arguments)
     & $FilePath @Arguments
     if ($LASTEXITCODE -ne 0) {
-        throw "Command failed with exit code ${LASTEXITCODE}: $FilePath $($Arguments -join ' ')"
+        # Never echo arguments here: retoc calls can include the owner's AES key.
+        throw "Command failed with exit code ${LASTEXITCODE}: $FilePath (arguments redacted)"
     }
 }

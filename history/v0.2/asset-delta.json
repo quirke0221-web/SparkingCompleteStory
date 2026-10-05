@@ -1,0 +1,8 @@
+{
+  "status": "tested-regression",
+  "base": "v0.1",
+  "operations": [
+    {"asset":"/Game/SS/MasterDataAsset/DragonAdventureIF/CompleteStory/DAIF_CharaData_CompleteStory","property":"IgnoreOpen","operation":"set","value":true}
+  ],
+  "runtime":"Complete Story disappeared from character selection."
+}

@@ -1,5 +1,7 @@
 # Start Here
 
+For the complete technical record, including every attempt and immediate implementation directions, read [COMPLETE_TECHNICAL_HANDOFF.md](COMPLETE_TECHNICAL_HANDOFF.md).
+
 Complete Story aims to add a separate thirteenth Episode Battle choice while preserving all twelve original campaigns. Eventually it should orchestrate existing canonical content chronologically across Goku, Piccolo, Gohan, Krillin, Vegeta, and other viewpoints. The first milestone is only: **Complete Story → New Game → Goku's Raditz opening → playable battle**.
 
 ## Current truth

@@ -1,0 +1,9 @@
+{
+  "status": "tested-no-fix",
+  "base": "v0.3",
+  "operations": [
+    {"asset":"/Game/SS/MasterDataAsset/DownLoadContents/DLC_013","property":"AdventureIFCharacterIds","operation":"append","key":"0000_00"}
+  ],
+  "stockContext":{"AdventureIFCharacterIds":["0050_00","0060_00","0070_00","0162_00"],"DlcUnlockIgnoreCharacterIds":["0310_00","0020_50"]},
+  "runtime":"Unlock and the same NEO storefront remained. This did not establish an actual DLC requirement."
+}

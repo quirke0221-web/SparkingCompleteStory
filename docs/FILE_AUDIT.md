@@ -1,5 +1,7 @@
 # File Audit
 
+> Post-audit handoff additions are tracked in Git: `COMPLETE_TECHNICAL_HANDOFF.md`, `history/`, the full sanitized runtime evidence/configuration, the broader targeted object-dump excerpt, and the live project-authored `mods/` and `runtime/CompleteStory/` source snapshots. Restricted originals were collected under ignored `local-handoff/complete-project-materials-2026-10-04/`. The inventory below is the original audit snapshot and was not rerun.
+
 Generated: 2026-10-04 21:11:20 -04:00
 
 This inventory preserves local files and classifies them for the public repository. A classification of excluded does not mean deleted. Save identifiers are not reproduced in file rows; save folders are summarized below.

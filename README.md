@@ -1,8 +1,12 @@
 # Sparking ZERO: Complete Story
 
+**Complete engineering handoff:** [COMPLETE_TECHNICAL_HANDOFF.md](COMPLETE_TECHNICAL_HANDOFF.md). Exact tested source/deltas are indexed in [history/README.md](history/README.md).
+
 > **Authoritative status (2026-10-04):** v0.3 is the clean proven menu/asset baseline. The thirteenth entry appears in game but remains locked and routes to an unrelated NEO storefront. v0.7 crashes after unsafe panel reflection. No Complete Story Raditz launch or cross-character transition has been verified. Begin with [START_HERE.md](START_HERE.md); older sections below are retained as development history.
 
 Development project for adding a separate Complete Story option to Episode Battle while preserving the original 12 campaigns.
+
+**Full handoff:** [COMPLETE_TECHNICAL_HANDOFF.md](COMPLETE_TECHNICAL_HANDOFF.md) contains the complete architecture, v0.1–v0.7 evidence, reproduction workflow, crash analysis, and next engineering directions. Exact historical source/deltas are indexed under [history/](history/README.md).
 
 ## Current verified state
 

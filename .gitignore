@@ -11,9 +11,7 @@
 /local-handoff/
 /backup save.zip
 
-# Abandoned runtime prototypes retained locally for reference only
-/mods/CompleteStory13thTest/
-/runtime/CompleteStory/
+# Project-authored runtime snapshots are tracked, including failed prototypes.
 
 # Packaged Unreal/IoStore artifacts
 *.pak

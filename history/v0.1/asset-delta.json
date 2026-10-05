@@ -1,0 +1,10 @@
+{
+  "status": "tested-partial-failure",
+  "base": "stock build 24953175",
+  "operations": [
+    {"asset":"/Game/SS/Blueprints/DragonAdventureIFData","property":"PtrRecords","operation":"append","key":"0000_00","value":"/Game/SS/MasterDataAsset/DragonAdventureIF/CompleteStory/DAIF_CharaData_CompleteStory"},
+    {"asset":"/Game/SS/MasterDataAsset/DragonAdventureIF/CompleteStory/DAIF_CharaData_CompleteStory","operation":"clone-and-rename","source":"/Game/SS/MasterDataAsset/DragonAdventureIF/0000_00/DAIF_CharaData_0000_00","CharacterName":"Complete Story"}
+  ],
+  "preserved":{"DefaultOpenCharacter":"0000_40","StartEvent":"Event_00_0_00_00","StartEventBlock":"EventBlock_0000_00","EventData":"DIF_Event_0000_00"},
+  "runtime":"Tile appeared with Unlock; Confirm soft-locked the menu."
+}
