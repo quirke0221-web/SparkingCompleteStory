@@ -1,26 +1,90 @@
-# Reproducible Build Workflow
+# Complete Story: Build, Verification & Testing Runbook
 
-## Compatibility
+> **Status:** AUTHORITATIVE SSOT  
+> **Target Version:** Dragon Ball: Sparking! ZERO (Steam Build `24953175`, Unreal Engine `5.1.1`)
 
-The established pipeline targets Steam build `24953175`, UE `5.1.1`, FModel `4.4.4.0`, retoc `0.1.5`, UAssetGUI/UAssetAPI `1.1.0`, and mapping SHA-256 `B7AE00F54BA558EF7793CABA3437B3E82D64D29A6822C34CE73B4A1F91B2D1C5`.
+---
 
-## Setup
+## 1. Prerequisites & Environment Setup
 
-Copy `config/project.local.example.psd1` to ignored `config/project.local.psd1`, update local paths, and set `SPARKING_ZERO_AES_KEY` in the current shell. Never write the key into a script or commit it.
+To build and package Complete Story, the following environment and dependencies are required:
 
-## End-to-end stages
+### 1.1 Tooling & Pinned Binaries
+* **retoc:** v0.1.5 (`portable/retoc.exe`, SHA-256 `005a0da...`)
+* **UAssetGUI / UAssetAPI:** v1.1.0 (`UAssetGUI.exe`, SHA-256 `895781a...`)
+* **RE-UE4SS:** v3.0.1 Beta (`4e5461c`)
+* **Mapping File:** `SparkingZERO.usmap` (2,369,253 bytes, SHA-256 `B7AE00F54BA558EF7793CABA3437B3E82D64D29A6822C34CE73B4A1F91B2D1C5`)
 
-1. Use retoc `to-legacy --version UE5_1` against the legitimate stock IoStore, filtering only the package paths in `evidence/reproduction/required-assets.txt`. Retain the generated `scriptobjects.bin` in local staging. Do not extract the whole game.
-2. Run `scripts/Export-AssetJson.ps1` to export the two registries and Goku character data with UAssetGUI.
-3. Run `scripts/build_complete_story_assets.ps1` with the three source JSON paths. It asserts the twelve-entry baseline, `DefaultOpenCharacter=0000_40`, Goku's Raditz references, then emits the exact v0.3 transform: a cloned character asset plus thirteenth character/chart records.
-4. Run `scripts/Test-CompleteStoryJson.ps1` for structural assertions.
-5. Run `scripts/Import-ModifiedAssets.ps1` to serialize mapped UE5.1 legacy assets into staging. Copy the locally generated `scriptobjects.bin` to the staging root.
-6. Run `scripts/Build-IoStore.ps1` to convert staging back to a UE5.1 IoStore overlay.
-7. Run `scripts/Verify-IoStore.ps1`; also decode the result in full stock-container context and re-export JSON to compare records, imports, and start pointers.
-8. Package only `CompleteStory_P.pak/.utoc/.ucas`. Generated ZIPs are intentionally excluded from Git.
+### 1.2 Local Configuration (`config/project.local.psd1`)
+Copy `config/project.local.example.psd1` to `config/project.local.psd1` (ignored by Git) and define:
+```powershell
+@{
+    GameRoot                 = 'C:\SteamLibrary\steamapps\common\DRAGON BALL Sparking! ZERO'
+    RetocPath                = 'C:\modding\tools\retoc.exe'
+    UAssetGUIPath            = 'C:\modding\tools\UAssetGUI.exe'
+    MappingName              = 'SparkingZERO'
+    MappingPath              = 'C:\modding\mappings\SparkingZERO.usmap'
+    AesKeyEnvironmentVariable = 'SPARKING_ZERO_AES_KEY'
+}
+```
 
-## Important limitation
+### 1.3 AES Key Environment Variable
+Set the AES encryption key for your shell session:
+```powershell
+$env:SPARKING_ZERO_AES_KEY = "0x..." # Your authorized game key
+```
+*(Never write or commit the AES key into configuration files or scripts).*
 
-These scripts reproduce the **v0.3 asset baseline**, which is known to remain locked in game. They do not solve native playability. The targeted extraction command still requires the owner-supplied AES key and stock packages, so CI cannot perform a full clean build. UAssetGUI 1.1.0 and retoc's UE5.1 conversion were validated locally, but a fresh clone cannot build without those excluded inputs.
+---
 
-Install and uninstall helpers support `-WhatIf`; read `docs/TESTING.md` before touching a live installation.
+## 2. End-to-End Build Pipeline
+
+Build the entire mod with one unified orchestrator cmdlet:
+
+```powershell
+.\scripts\Build-CompleteStory.ps1
+```
+
+### 2.1 The 6 Automated Pipeline Stages
+1. **Stage 1 (Extract Stock Assets):** Invokes `retoc to-legacy` with targeted filters to extract `DragonAdventureIFData`, `DragonAdventureIFChartData`, and Goku's `DAIF_CharaData_0000_00` into `staging/legacy/`.
+2. **Stage 2 (Deserialize to JSON):** Invokes `UAssetGUI tojson` with `VER_UE5_1` and `SparkingZERO.usmap` into `staging/json/`.
+3. **Stage 3 (Pure Domain Transformation):** Calls `scripts/Transform-CompleteStoryAssets.ps1` to splice route `0000_00` into character and chart registries and clone Goku's data into `DAIF_CharaData_CompleteStory` in `staging/modified-json/`.
+4. **Stage 4 (Recompile to UAsset):** Invokes `UAssetGUI fromjson` to serialize modified assets into `staging/container/`. Copies `scriptobjects.bin`.
+5. **Stage 5 (Pack IoStore Container):** Invokes `retoc to-zen --version UE5_1` to compile `staging/container/` into `dist/CompleteStory_P.{pak,utoc,ucas}`, then runs `retoc verify`.
+6. **Stage 6 (Package for Unverum):** Bundles container files into `dist/CompleteStory-v0.3-Unverum.zip`.
+
+### 2.2 Rebuild Acceleration
+If stock assets are already extracted in `staging/legacy/`, skip re-extraction:
+```powershell
+.\scripts\Build-CompleteStory.ps1 -SkipExtraction
+```
+
+---
+
+## 3. Local Developer Deployment
+
+For testing locally without Unverum, use the developer deployment utility:
+
+### Install Development Build
+```powershell
+# Backs up any existing installation and copies dist/ container files to ~mods\CompleteStory\
+.\scripts\Deploy-DevelopmentBuild.ps1 -Install
+```
+
+### Uninstall Development Build
+```powershell
+# Verifies a restorable backup in local-handoff/deploy-backups/ and removes ~mods\CompleteStory\
+.\scripts\Deploy-DevelopmentBuild.ps1 -Uninstall
+```
+
+---
+
+## 4. Verification & Testing Protocol
+
+Before running in-game tests:
+1. **Back Up Save Data:** Always back up `MainGameSaveData` from `%LOCALAPPDATA%\SparkingZERO\Saved\SaveGames\` to an external directory.
+2. **Isolate Mods:** Ensure no conflicting UI or Episode Battle mods are active.
+3. **Bounded Testing Gates:**
+   * **Gate 1 (Tile Presentation):** Verify all 12 stock characters remain selectable and the 13th "Complete Story" tile appears.
+   * **Gate 2 (Interaction):** Confirm tile selection.
+   * **Gate 3 (Launch):** Verify transition into Goku's Raditz opening battle without native exceptions.

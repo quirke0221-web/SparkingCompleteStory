@@ -12,11 +12,9 @@ chart_ui,/Game/SS/Blueprints/DragonAdventureIF/BP_DragonAdventureIFChartSelecter
 save,FSSDragonAdventureIFSaveData,Top-level character and playability maps,verified reflection; new-key initialization untested
 save,FSSDragonAdventureIFCharacterSaveData,Per-route event block/event state,verified reflection; new-key initialization untested
 save,FSSDragonAdventureIFEventSaveData,Per-event result and clear state,verified reflection
-prototype,mods/CompleteStory13thTest/scripts/main.lua,Retired UE4SS transient alias,abandoned; do not install
 character,/Game/SS/MasterDataAsset/DragonAdventureIF/CompleteStory/DAIF_CharaData_CompleteStory,Separate Complete Story identity plus Goku start references,built and verified offline; runtime untested
 tool,tools/UAssetGUI-v1.1.0/UAssetGUI.exe,Official portable UAssetAPI editor,verified version/hash; cannot read retained raw Zen blob directly
 tool,tools/retoc-v0.1.5/portable/retoc.exe,Official IoStore converter and verifier,verified release checksum and unencrypted container test
 source,pakchunk0-Windows.utoc,Source package-store metadata and cooked assets,targeted authorized read-only conversion succeeded
-alternative,SparkingZERO_ModProject plus custom UE5 fork,Canonical cooking toolchain,not needed for v0.1 conversion path
-package,dist/CompleteStory-v0.1/CompleteStory_P.utoc,Two-package UE5.1 IoStore overlay,retoc verify passed; in-game untested
-package,dist/CompleteStory-v0.1-Unverum.zip,Installable archive containing pak utoc ucas and instructions,archive integrity verified; in-game untested
+package,dist/CompleteStory-v0.3/CompleteStory_P.utoc,Three-package UE5.1 IoStore overlay,retoc verify passed
+package,dist/CompleteStory-v0.3-Unverum.zip,Installable archive containing pak utoc ucas and instructions,archive integrity verified
