@@ -21,7 +21,7 @@
 *.uexp
 *.ubulk
 *.bin
-pakstore.json
+/pakstore.json
 
 # Archives, binaries, saves, diagnostics, and local configuration
 *.zip
