@@ -50,3 +50,15 @@ The following dependencies were verified via live repository inspection and loca
   * `[FACT]` Source @ `e41b135` supports Sparking! ZERO (its README does not list it). Mods go to `SparkingZERO\Content\Paks\~mods`, each enabled `.pak` copied as `<name>_9_P.pak` with matching `.utoc`/`.ucas`. *(Corrected 2026-10-05: Unverum appends `_9_P` itself; it does not require authors to use `_P`.)* See `docs/dependencies/unverum/README.md`.
 * **Reloaded-II:** [Reloaded-Project/Reloaded-II](https://github.com/Reloaded-Project/Reloaded-II)
   * `[HYPOTHESIS]` Community use for Sparking! ZERO audio/video replacement. Not sourced. Not a dependency of this project.
+
+---
+
+## 3. Dedicated Community Case Studies
+
+The architectural patterns and safeguards employed in this project are derived directly from two verified community case studies:
+
+* **[AccessForge (`SparkingZeroAccess`)](accessforge.md):**  
+  Case study on hybrid RE-UE4SS mod architecture, 1:1 root folder parity (`SparkingZeroAccess/` -> `Win64\Mods\`), isolating build tooling to `helpers/` (ADR 0008), and safe GameThread native hooking without Slate widget reflection (ADR 0004).
+
+* **[WistfulHopes (`SparkingZERO_ModProject`)](wistfulhopes.md):**  
+  Case study on UE 5.1.1 Zen/IoStore container compilation via `retoc`, non-destructive in-memory `_P` patch priority mounting, and clean distribution packaging without bundling anti-cheat bypass binaries (ADR 0002).
