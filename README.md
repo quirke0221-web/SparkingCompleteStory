@@ -21,11 +21,11 @@ All project documentation follows the strict governance lifecycle defined in [`A
   * `0003`: Separation of Concerns in Asset Pipeline (Orchestrator vs. Pure Transformation)
   * `0004`: Strict Ban on Transient Slate Widget Reflection in Runtime Scripting
   * `0005`: Documentation Taxonomy, Knowledge Consolidation, and Clean Root Standard
+  * `0006`: Pruning Legacy Evidence Debris & Distilled Research Standard
 * **[Dependency Matrix & Reference Vault](docs/dependencies/dependencies.md):** Pinned tool versions (`retoc`, `UAssetGUI`, `RE-UE4SS`, `Unverum`, `UTOC Bypass`) and source receipts.
 * **[Empirical Research Vault](docs/research/):**
   * `asset-data-dictionary.md`: Reverse-engineered `PtrRecords` struct offsets, event pointers, and save structures.
   * `legacy-iteration-history.md`: Complete v0.1–v0.7 failure post-mortems and "Do Not Repeat" matrix.
-  * `asset-inventory.csv`: Tabular inventory of game package paths and classes.
   * `sparking-zero-modding-ecosystem.md`: Verified community case studies (AccessForge, WistfulHopes).
 
 ---
