@@ -1,9 +1,0 @@
-{
-  "status": "tested-regression",
-  "base": "v0.3",
-  "operations": [
-    {"asset":"/Game/SS/Blueprints/DragonAdventureIFData","property":"DefaultOpenCharacter.Key","operation":"set","old":"0000_40","value":"0000_00"}
-  ],
-  "runtime":"Character-selection initialization regressed and other characters disappeared.",
-  "registryJsonSha256":"27F861302B47CE0C646DB8AC82F1185256CF149324BC6EB8073DECE765DABA88"
-}
