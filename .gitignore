@@ -8,6 +8,10 @@
 /backup save/
 /backup save.zip
 
+# Abandoned runtime prototypes retained locally for reference only
+/mods/CompleteStory13thTest/
+/runtime/CompleteStory/
+
 # Packaged Unreal/IoStore artifacts
 *.pak
 *.ucas
