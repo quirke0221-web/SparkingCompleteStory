@@ -45,40 +45,42 @@ Every tool action in the pipeline is strictly delegated to its dedicated Tier-2 
 
 ## 3. The 6-Stage Mod Engineering Lifecycle
 
+The mod build and packaging lifecycle is coordinated end-to-end by [`helpers/Build-CompleteStory.ps1`](file:///c:/echor/projects/SparkingCompleteStory/helpers/Build-CompleteStory.ps1):
+
 ### Stage 1: Targeted Extraction
-- **Delegated to:** [`retoc-iostore-packer`](../retoc-iostore-packer/SKILL.md)
-- **Script:** [`scripts/Extract-RequiredAssets.ps1`](file:///c:/echor/projects/SparkingCompleteStory/scripts/Extract-RequiredAssets.ps1)
-- Extracts only the targeted stock asset packages (`DragonAdventureIFData`, `DragonAdventureIFChartData`, character data) and `scriptobjects.bin` using substring `--filter` flags.
+- **Tool:** [`retoc-iostore-packer`](../retoc-iostore-packer/SKILL.md) (`retoc to-legacy --version UE5_1`)
+- **Automated by:** `helpers/Build-CompleteStory.ps1` Stage 1
+- Extracts only the targeted stock asset packages (`DragonAdventureIFData`, `DragonAdventureIFChartData`, character data) and `scriptobjects.bin` using substring `--filter` flags into `staging/legacy/`.
 
 ### Stage 2: JSON Deserialization
-- **Delegated to:** [`uassetgui-asset-serialization`](../uassetgui-asset-serialization/SKILL.md)
-- **Script:** [`scripts/Export-AssetJson.ps1`](file:///c:/echor/projects/SparkingCompleteStory/scripts/Export-AssetJson.ps1)
-- Converts extracted binary `.uasset` files into indented JSON using `VER_UE5_1` and `SparkingZERO.usmap`.
+- **Tool:** [`uassetgui-asset-serialization`](../uassetgui-asset-serialization/SKILL.md) (`UAssetGUI tojson`)
+- **Automated by:** `helpers/Build-CompleteStory.ps1` Stage 2
+- Converts extracted binary `.uasset` files into indented JSON using `VER_UE5_1` and `SparkingZERO.usmap` into `staging/json/`.
 
-### Stage 3: Data Asset Modification & Schema Invariants
-- **Delegated to:** [`uassetgui-asset-serialization`](../uassetgui-asset-serialization/SKILL.md)
-- Injects the Complete Story campaign entries into the JSON structure:
-  - Appends campaign metadata to `DragonAdventureIFData`.
-  - Configures canonical battle progression in `DragonAdventureIFChartData`.
-  - Links custom character data records.
-- **Mandatory Invariant:** Synchronize `"Imports"` table entries whenever external package references are introduced.
+### Stage 3: Pure Domain Transformation
+- **Script:** [`helpers/Transform-CompleteStoryAssets.ps1`](file:///c:/echor/projects/SparkingCompleteStory/helpers/Transform-CompleteStoryAssets.ps1)
+- **Automated by:** `helpers/Build-CompleteStory.ps1` Stage 3
+- Injects campaign entries into the JSON structure (pure in-memory JSON mutation, zero subprocess calls per ADR 0003):
+  - Appends `0000_00` to `DragonAdventureIFData.PtrRecords`.
+  - Maps `0000_00` in `DragonAdventureIFChartData.PtrRecords`.
+  - Clones Goku's asset into `DAIF_CharaData_CompleteStory` with culture-invariant title `"Complete Story"`.
 
 ### Stage 4: Binary Asset Recompilation
-- **Delegated to:** [`uassetgui-asset-serialization`](../uassetgui-asset-serialization/SKILL.md)
-- **Script:** [`scripts/Import-ModifiedAssets.ps1`](file:///c:/echor/projects/SparkingCompleteStory/scripts/Import-ModifiedAssets.ps1)
-- Recompiles modified JSON into `.uasset` + companion `.uexp` binaries into the staging tree (`staging\SparkingZERO\Content\...`).
+- **Tool:** [`uassetgui-asset-serialization`](../uassetgui-asset-serialization/SKILL.md) (`UAssetGUI fromjson`)
+- **Automated by:** `helpers/Build-CompleteStory.ps1` Stage 4
+- Recompiles modified JSON into `.uasset` + companion `.uexp` binaries into `staging/container/`. Copies `scriptobjects.bin`.
 
 ### Stage 5: Zen IoStore Container Packaging
-- **Delegated to:** [`retoc-iostore-packer`](../retoc-iostore-packer/SKILL.md)
-- **Script:** [`scripts/Build-IoStore.ps1`](file:///c:/echor/projects/SparkingCompleteStory/scripts/Build-IoStore.ps1)
-- Verifies that `scriptobjects.bin` is staged, and compiles the staged asset tree into `CompleteStory_P.utoc`, `CompleteStory_P.ucas`, and `CompleteStory_P.pak` using `retoc to-zen --version UE5_1`.
+- **Tool:** [`retoc-iostore-packer`](../retoc-iostore-packer/SKILL.md) (`retoc to-zen --version UE5_1`)
+- **Automated by:** `helpers/Build-CompleteStory.ps1` Stage 5
+- Compiles `staging/container/` into `dist/CompleteStory_P.{pak,utoc,ucas}`.
 
 ### Stage 6: Verification & Release Packaging
-- **Delegated to:** [`retoc-iostore-packer`](../retoc-iostore-packer/SKILL.md) & [`unverum-mod-packager`](../unverum-mod-packager/SKILL.md)
-- **Script:** [`scripts/Verify-IoStore.ps1`](file:///c:/echor/projects/SparkingCompleteStory/scripts/Verify-IoStore.ps1)
+- **Tool:** [`retoc-iostore-packer`](../retoc-iostore-packer/SKILL.md) (`retoc verify`) & [`unverum-mod-packager`](../unverum-mod-packager/SKILL.md)
+- **Automated by:** `helpers/Build-CompleteStory.ps1` Stage 6
 - Runs `retoc verify` on the compiled `.utoc`.
-- Verifies non-zero file sizes across all three container files (`.pak`, `.utoc`, `.ucas`).
-- Packages the release archive ensuring no third-party bypass (`dsound.dll`, `.asi`) or injection binaries are bundled.
+- Verifies non-zero file sizes across `.pak`, `.utoc`, and `.ucas`.
+- Packages the Unverum-ready release archive `dist/CompleteStory-v0.3-Unverum.zip` ensuring no third-party bypass DLLs are bundled (ADR 0002).
 
 ---
 

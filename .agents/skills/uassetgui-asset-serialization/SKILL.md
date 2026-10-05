@@ -49,7 +49,7 @@ Receipt-backed facts:
 - Argument order is strictly: `<source> <destination> <engine_version> [mappings_name]` `[P:L134-L148]`.
 - `<engine_version>` (`args[4]`): Parsed via `Enum.TryParse(args[4], out selectedVer)` `[P:L144]`. Must be the exact enum string `'VER_UE5_1'`. Dotted strings like `'5.1'` fail C# enum parsing and fall back to `UNKNOWN`.
 - `[mappings_name]` (`args[5]`): Looked up via `UAGConfig.TryGetMappings(args[5])` `[P:L140]`. Looks up the dictionary key `Path.GetFileNameWithoutExtension(mappingPath)` in `MappingsFolder` `[C:L90-L95, L177]`. Must be the bare name without extension (`'SparkingZERO'`). Passing an absolute path fails the dictionary lookup and drops mapping support.
-- Local implementation: [`scripts/Export-AssetJson.ps1`](file:///c:/echor/projects/SparkingCompleteStory/scripts/Export-AssetJson.ps1#L23) line 23.
+- Local implementation: [`helpers/Build-CompleteStory.ps1`](file:///c:/echor/projects/SparkingCompleteStory/helpers/Build-CompleteStory.ps1#L64) line 64.
 
 ### 2.2 Reconstruct Binary Assets: `fromjson`
 
@@ -62,7 +62,7 @@ Receipt-backed facts:
 - Argument order is strictly: `<source_json> <dest_uasset> [mappings_name]` `[P:L149-L170]`.
 - Notice: `fromjson` takes **no engine version parameter**. Positional index `args[4]` is the mapping name. Passing an engine version shifts argument positions and breaks mapping loading.
 - Companion `.uexp` writing: `UAsset.Write(outputPath)` automatically checks `if (this.UseSeparateBulkDataFiles && this.Exports.Count > 0)` and writes `.uexp` alongside `.uasset` `[A:L3138-L3150]`. Cooked Sparking! ZERO assets have `UseSeparateBulkDataFiles = true` preserved from the original asset header `[A:L569]`.
-- Local implementation: [`scripts/Import-ModifiedAssets.ps1`](file:///c:/echor/projects/SparkingCompleteStory/scripts/Import-ModifiedAssets.ps1#L22) line 22.
+- Local implementation: [`helpers/Build-CompleteStory.ps1`](file:///c:/echor/projects/SparkingCompleteStory/helpers/Build-CompleteStory.ps1#L90) line 90.
 
 ---
 
@@ -77,11 +77,11 @@ When programmatically editing exported JSON:
 
 ## 4. Pre-Flight Checklist (run BEFORE invoking)
 
-- [ ] Path check: UAssetGUI binary exists at `$config.UAssetGUIPath` `[LOCAL: scripts/Common.ps1:9]`.
-- [ ] Mapping location check: `SparkingZERO.usmap` exists at `<ExeDir>\Data\Mappings\SparkingZERO.usmap` (if portable mode) or `%LOCALAPPDATA%\UAssetGUI\Mappings\SparkingZERO.usmap` `[LOCAL: scripts/Common.ps1:10]`.
+- [ ] Path check: UAssetGUI binary exists at `$config.UAssetGUIPath` `[LOCAL: helpers/Common.ps1:10]`.
+- [ ] Mapping location check: `SparkingZERO.usmap` exists at `<ExeDir>\Data\Mappings\SparkingZERO.usmap` (if portable mode) or `%LOCALAPPDATA%\UAssetGUI\Mappings\SparkingZERO.usmap` `[LOCAL: helpers/Common.ps1:11]`.
 - [ ] Argument check for `tojson`: Engine version parameter is strictly string `'VER_UE5_1'`, not `'5.1'` or `'UE5_1'`.
 - [ ] Argument check for `fromjson`: Exactly 3 positional arguments passed (`source.json`, `dest.uasset`, `'SparkingZERO'`). No engine version.
-- [ ] Destination directory for binary output exists before calling `fromjson` `[LOCAL: scripts/Import-ModifiedAssets.ps1:21]`.
+- [ ] Destination directory for binary output exists before calling `fromjson` `[LOCAL: helpers/Build-CompleteStory.ps1:89]`.
 
 ---
 

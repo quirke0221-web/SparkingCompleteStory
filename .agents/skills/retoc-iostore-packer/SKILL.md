@@ -55,7 +55,7 @@ if ($LASTEXITCODE -ne 0) { throw 'retoc to-legacy failed (arguments redacted)' }
 Facts behind each part:
 - `--aes-key` belongs to the top-level `Args` struct, not the subcommand
   `[S:L279-L281]`. Place it **before** `to-legacy`, as the validated local script
-  does `[LOCAL: scripts/Extract-RequiredAssets.ps1:22]`.
+  does `[LOCAL: helpers/Build-CompleteStory.ps1:49]`.
 - Input may be a single `.utoc` **or a directory of containers** (e.g. `Content/Paks`) `[S:L107-L110]`.
   Project policy: always pass the `Paks` directory `[LOCAL]`.
 - `--version` is **optional** for `to-legacy` (`Option<EngineVersion>`) `[S:L137]`.
@@ -64,7 +64,7 @@ Facts behind each part:
   matching against the container path: `package_path.contains(f)` `[S:L692]`.
   It is NOT a prefix, glob, or regex. Several `--filter` flags may go in one call.
 - Filter against the **on-disk package path** (`SparkingZERO/Content/...`), not the
-  `/Game/...` object path `[LOCAL: Extract-RequiredAssets.ps1:5-7]`.
+  `/Game/...` object path `[LOCAL: helpers/Build-CompleteStory.ps1:44-46]`.
 - Output selection: if `<OUTPUT>` ends in `.pak` a pak is written, otherwise a
   directory tree `[S:L628]`. Project policy: extract to a directory.
 - Unless `--no-script-objects` is set, a `scriptobjects.bin` is written to the
@@ -92,7 +92,7 @@ Facts:
 - `scriptobjects.bin`: **optional** upstream. If any file named `scriptobjects.bin`
   is in the input it is parsed "for VNI support and import checking" `[S:L807-L811]`.
   **Project policy: required.** Stage it at `<stageDir>\scriptobjects.bin` before
-  packing `[LOCAL: scripts/Build-IoStore.ps1:11-12]`.
+  packing `[LOCAL: helpers/Build-CompleteStory.ps1:92-94]`.
 
 ### 2.3 Verification: `verify`
 
@@ -120,7 +120,7 @@ or whether the game will load the container.
 - [ ] Version gate: `& $retoc --version` reports `0.1.5`. If not, stop. The version is pinned.
 - [ ] `--version UE5_1` is present (required for `to-zen`, policy for `to-legacy`).
 - [ ] **to-legacy:** `$env:SPARKING_ZERO_AES_KEY` is non-empty. The key is passed only by
-      variable, and no log, error, or transcript echoes the argument list `[LOCAL: scripts/Common.ps1:26-33]`.
+      variable, and no log, error, or transcript echoes the argument list `[LOCAL: helpers/Common.ps1:34-45]`.
 - [ ] **to-legacy:** each filter is as specific as possible (substring matching over-matches).
 - [ ] **to-legacy:** output directory is a scratch/staging path and never `~mods/` or the game install.
 - [ ] **to-zen:** staging root contains `scriptobjects.bin` and a `SparkingZERO\Content\...` tree.
@@ -136,7 +136,7 @@ or whether the game will load the container.
       `Extracted N (M failed)` `[S:L738]` and require `M = 0` and `N` equal to the expected count.
 - [ ] **to-legacy:** every expected `.uasset` + `.uexp` exists, and `scriptobjects.bin` exists at output root.
 - [ ] **to-zen:** output contains **no** `Skipping ... does not have a split exports file` lines. Treat any as failure.
-- [ ] **to-zen:** `.utoc`, `.ucas`, `.pak` all exist with non-zero size `[LOCAL: Build-IoStore.ps1:18-20]`.
+- [ ] **to-zen:** `.utoc`, `.ucas`, `.pak` all exist with non-zero size `[LOCAL: helpers/Build-CompleteStory.ps1:103-107]`.
 - [ ] **to-zen:** `retoc verify` prints `verified`.
 - [ ] **to-zen:** `retoc list <utoc> --path` shows exactly the intended package paths and nothing else.
 
@@ -168,6 +168,6 @@ or whether the game will load the container.
 - `[OBSERVATION]` `docs/VERSION_HISTORY.md` records a retoc-built container passing
   `retoc verify`. **Not yet run:** a control `verify` against a vanilla Sparking! ZERO container.
 - `[OBSERVATION]` The local pipeline requires an AES key for Sparking! ZERO containers
-  `[LOCAL: Extract-RequiredAssets.ps1:16-17]`. Upstream docs make no game-specific statement.
+  `[LOCAL: helpers/Build-CompleteStory.ps1:38-41]`. Upstream docs make no game-specific statement.
 - `[HYPOTHESIS]` Passing a single `.utoc` instead of the `Paks` directory fails to resolve
   dependencies. Upstream accepts both forms. Policy uses the directory.
