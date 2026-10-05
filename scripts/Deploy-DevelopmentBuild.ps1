@@ -3,6 +3,7 @@
     Local developer convenience utility for staging and unstaging Complete Story in Sparking ZERO.
 .DESCRIPTION
     Supports -Install and -Uninstall switches for local testing.
+    Stages both the IoStore container (~mods) and the RE-UE4SS runtime mod (Win64\Mods).
     End-user mod players should always install via Unverum mod manager.
 #>
 [CmdletBinding(SupportsShouldProcess)]
@@ -28,40 +29,65 @@ $config = Get-ProjectConfiguration $ConfigPath
 $dirs   = Get-PipelineDirectories
 
 if (-not $BuildDirectory) { $BuildDirectory = $dirs.Dist }
-$target = Join-Path $config.GameRoot 'SparkingZERO\Content\Paks\~mods\CompleteStory'
-$files  = @('CompleteStory_P.pak', 'CompleteStory_P.utoc', 'CompleteStory_P.ucas')
+$pakTarget     = Join-Path $config.GameRoot 'SparkingZERO\Content\Paks\~mods\CompleteStory'
+$runtimeTarget = Join-Path $config.GameRoot 'SparkingZERO\Binaries\Win64\Mods\CompleteStory'
+$runtimeSource = Join-Path $PSScriptRoot '..\runtime\CompleteStory'
+$pakFiles      = @('CompleteStory_P.pak', 'CompleteStory_P.utoc', 'CompleteStory_P.ucas')
 
 if ($Install) {
-    foreach ($f in $files) { Assert-File (Join-Path $BuildDirectory $f) "Build container file '$f'" }
-    $timestamp = (Get-Date -Format 'yyyyMMdd-HHmmss')
-    $backup = Join-Path $BackupRoot "install-$timestamp"
+    foreach ($f in $pakFiles) { Assert-File (Join-Path $BuildDirectory $f) "Build container file '$f'" }
+    Assert-File (Join-Path $runtimeSource 'scripts\main.lua') 'Runtime main.lua entrypoint'
+    Assert-File (Join-Path $runtimeSource 'enabled.txt') 'Runtime enabled.txt flag'
 
-    if ($PSCmdlet.ShouldProcess($target, 'Backup existing CompleteStory mod and deploy new build')) {
-        if (Test-Path -LiteralPath $target) {
+    $timestamp = (Get-Date -Format 'yyyyMMdd-HHmmss')
+    $backup    = Join-Path $BackupRoot "install-$timestamp"
+
+    if ($PSCmdlet.ShouldProcess($config.GameRoot, 'Backup existing CompleteStory mod files and deploy new build')) {
+        if ((Test-Path -LiteralPath $pakTarget) -or (Test-Path -LiteralPath $runtimeTarget)) {
             $null = New-Item -ItemType Directory -Force -Path $backup
-            Copy-Item -LiteralPath $target -Destination $backup -Recurse
+            if (Test-Path -LiteralPath $pakTarget) {
+                Copy-Item -LiteralPath $pakTarget -Destination (Join-Path $backup 'ContentMods') -Recurse
+            }
+            if (Test-Path -LiteralPath $runtimeTarget) {
+                Copy-Item -LiteralPath $runtimeTarget -Destination (Join-Path $backup 'RuntimeMod') -Recurse
+            }
         }
-        $null = New-Item -ItemType Directory -Force -Path $target
-        foreach ($f in $files) {
-            Copy-Item -LiteralPath (Join-Path $BuildDirectory $f) -Destination (Join-Path $target $f) -Force
+
+        # Deploy container assets
+        $null = New-Item -ItemType Directory -Force -Path $pakTarget
+        foreach ($f in $pakFiles) {
+            Copy-Item -LiteralPath (Join-Path $BuildDirectory $f) -Destination (Join-Path $pakTarget $f) -Force
         }
-        Write-Output "Successfully installed development build to: $target"
+
+        # Deploy runtime mod
+        $null = New-Item -ItemType Directory -Force -Path $runtimeTarget
+        Copy-Item -LiteralPath (Join-Path $runtimeSource '*') -Destination $runtimeTarget -Recurse -Force
+
+        Write-Output "Successfully deployed Complete Story container to: $pakTarget"
+        Write-Output "Successfully deployed Complete Story runtime mod to: $runtimeTarget"
     }
 }
 elseif ($Uninstall) {
-    if (Test-Path -LiteralPath $target) {
+    $hasPak     = Test-Path -LiteralPath $pakTarget
+    $hasRuntime = Test-Path -LiteralPath $runtimeTarget
+
+    if ($hasPak -or $hasRuntime) {
         $timestamp = (Get-Date -Format 'yyyyMMdd-HHmmss')
-        $backup = Join-Path $BackupRoot "uninstall-$timestamp"
-        if ($PSCmdlet.ShouldProcess($target, "Backup to '$backup' and remove CompleteStory from ~mods")) {
+        $backup    = Join-Path $BackupRoot "uninstall-$timestamp"
+
+        if ($PSCmdlet.ShouldProcess($config.GameRoot, "Backup and remove CompleteStory from game")) {
             $null = New-Item -ItemType Directory -Force -Path $backup
-            Copy-Item -LiteralPath $target -Destination (Join-Path $backup 'CompleteStory') -Recurse
-            $srcCount = (Get-ChildItem -LiteralPath $target -Recurse -File).Count
-            $bakCount = (Get-ChildItem -LiteralPath (Join-Path $backup 'CompleteStory') -Recurse -File).Count
-            if ($srcCount -ne $bakCount) { throw "Backup verification failed; aborting uninstallation." }
-            Remove-Item -LiteralPath $target -Recurse -Force
-            Write-Output "Successfully uninstalled CompleteStory from: $target (Backup: $backup)"
+            if ($hasPak) {
+                Copy-Item -LiteralPath $pakTarget -Destination (Join-Path $backup 'ContentMods') -Recurse
+                Remove-Item -LiteralPath $pakTarget -Recurse -Force
+            }
+            if ($hasRuntime) {
+                Copy-Item -LiteralPath $runtimeTarget -Destination (Join-Path $backup 'RuntimeMod') -Recurse
+                Remove-Item -LiteralPath $runtimeTarget -Recurse -Force
+            }
+            Write-Output "Successfully uninstalled CompleteStory (Backup: $backup)"
         }
     } else {
-        Write-Output "CompleteStory is not currently installed at: $target"
+        Write-Output "CompleteStory is not currently installed in: $($config.GameRoot)"
     }
 }
