@@ -14,7 +14,8 @@ param(
     [string]$ConfigPath = (Join-Path $PSScriptRoot '..\config\project.local.psd1'),
     [string]$ContainerName = 'CompleteStory_P',
     [switch]$SkipExtraction,
-    [switch]$PackageRelease = $true
+    [switch]$PackageRelease = $true,
+    [switch]$Deploy
 )
 
 Set-StrictMode -Version Latest
@@ -115,4 +116,12 @@ if ($PackageRelease) {
     Compress-Archive -Path $containerFiles -DestinationPath $zipPath -CompressionLevel Optimal
     Assert-File $zipPath 'Unverum release archive'
     Write-Output "Complete Story build successful: $zipPath"
+}
+
+# --- Optional: Deploy directly to local game installation ---
+if ($Deploy) {
+    Write-Output "Deploying Complete Story build to local game installation..."
+    $deployScript = Join-Path $PSScriptRoot 'Deploy-DevelopmentBuild.ps1'
+    Assert-File $deployScript 'Deploy-DevelopmentBuild.ps1'
+    & $deployScript -Install -BuildDirectory $dirs.Dist -ConfigPath $ConfigPath
 }

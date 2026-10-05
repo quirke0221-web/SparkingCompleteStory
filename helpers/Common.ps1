@@ -27,7 +27,7 @@ function Get-PipelineDirectories {
         ModifiedJsonStaging  = Join-Path $projectRoot 'staging\modified-json'
         ContainerStaging     = Join-Path $projectRoot 'staging\container'
         Dist                 = Join-Path $projectRoot 'dist'
-        RuntimeSource        = Join-Path $projectRoot 'src\runtime'
+        RuntimeSource        = Join-Path $projectRoot 'CompleteStory'
     }
 }
 
