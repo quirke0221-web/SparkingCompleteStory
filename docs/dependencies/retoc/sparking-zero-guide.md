@@ -12,7 +12,7 @@ Epistemic labels (see `AGENTS.md` §1.3):
 
 ## 1. Targeted Extraction (`to-legacy`)
 
-Local implementation: `scripts/Extract-RequiredAssets.ps1`.
+Local implementation: `helpers/Build-CompleteStory.ps1` (Stage 1).
 
 ```powershell
 & $retoc --aes-key $aes to-legacy --version UE5_1 `
@@ -22,13 +22,12 @@ Local implementation: `scripts/Extract-RequiredAssets.ps1`.
 
 - `[FACT]` `--aes-key` is a global option and goes before `to-legacy`.
 - `[LOCAL]` The key comes from `$env:SPARKING_ZERO_AES_KEY`. Errors redact arguments so
-  the key is never echoed (`scripts/Common.ps1` L26-L33).
+  the key is never echoed (`helpers/Common.ps1` L34-L45).
 - `[OBSERVATION]` The local pipeline needs an AES key to read Sparking! ZERO's stock containers
-  (`Extract-RequiredAssets.ps1` L16-L17). Upstream makes no game-specific statement.
+  (`helpers/Build-CompleteStory.ps1` L38-L41). Upstream makes no game-specific statement.
 - `[FACT]` `--filter` is a substring match. `DragonAdventureIFData` would also match a
   hypothetical `DragonAdventureIFDataFoo`. Use full package paths.
 - `[LOCAL]` Filters use the on-disk path (`SparkingZERO/Content/...`), not `/Game/...`.
-  The canonical package list is `evidence/reproduction/required-assets.txt`.
 - `[FACT]` Input may be one `.utoc` or a directory. `[POLICY]` Pass the whole `Paks` directory.
   `[HYPOTHESIS]` A single `.utoc` would fail to resolve dependencies. Untested.
 - `[FACT]` `--version` is optional for `to-legacy`. `[POLICY]` Always pass `UE5_1`.
@@ -41,7 +40,7 @@ Local implementation: `scripts/Extract-RequiredAssets.ps1`.
 
 ## 2. Container Compilation (`to-zen`)
 
-Local implementation: `scripts/Build-IoStore.ps1`.
+Local implementation: `helpers/Build-CompleteStory.ps1` (Stage 5).
 
 ```powershell
 & $retoc to-zen --version UE5_1 $stageDir (Join-Path $distDir 'CompleteStory_P.utoc')
@@ -51,7 +50,7 @@ Required staging layout:
 
 ```text
 <stageDir>\
-├── scriptobjects.bin                  # [POLICY] required by Build-IoStore.ps1 L11-L12
+├── scriptobjects.bin                  # [POLICY] required by helpers/Build-CompleteStory.ps1 L92-L94
 └── SparkingZERO\Content\...           # [FACT] mount point is ../../../ (game-root relative)
     ├── <Package>.uasset
     └── <Package>.uexp                 # [FACT] .uasset without .uexp is silently skipped
@@ -60,10 +59,10 @@ Required staging layout:
 - `[FACT]` `--version` is required.
 - `[FACT]` `scriptobjects.bin` is **optional upstream**. retoc only parses it, if present,
   "for VNI support and import checking".
-- `[POLICY]` Still required here: `Build-IoStore.ps1` fails without it.
+- `[POLICY]` Still required here: `helpers/Build-CompleteStory.ps1` fails without it.
   `[HYPOTHESIS]` A container built without it fails in-game. Untested.
 - `[FACT]` Outputs `<name>.utoc`, `<name>.ucas`, and a sibling `<name>.pak`.
-- `[LOCAL]` `Build-IoStore.ps1` L18-L20 asserts all three exist.
+- `[LOCAL]` `helpers/Build-CompleteStory.ps1` L103-L107 asserts all three exist.
 - `[FACT]` Treat any `Skipping ... does not have a split exports file` log line as a failure.
 
 Deployment location, `_P` naming policy, and which files a release must contain belong
@@ -73,8 +72,7 @@ to the `unverum-mod-packager` skill and its reference folder, not to retoc.
 
 ## 3. Verification (`verify`)
 
-Local implementation: `scripts/Verify-IoStore.ps1` (it also checks for non-empty `.pak/.utoc/.ucas`
-and prints SHA-256 hashes).
+Local implementation: `helpers/Build-CompleteStory.ps1` (Stage 6).
 
 ```powershell
 & $retoc verify (Join-Path $distDir 'CompleteStory_P.utoc')

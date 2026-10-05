@@ -17,7 +17,7 @@ Labels: `[FACT]` = source receipt, `[LOCAL]` = local project evidence, `[POLICY]
   ```
 - `[FACT]` The engine version argument **must** be the exact enum string `'VER_UE5_1'`. Dotted string `'5.1'` fails C# enum parsing and falls back to `UNKNOWN`.
 - `[FACT]` `$mappingName` must be the bare name without extension (`'SparkingZERO'`). The file `SparkingZERO.usmap` must exist inside `Data\Mappings\` (portable) or `%LOCALAPPDATA%\UAssetGUI\Mappings\`.
-- `[LOCAL]` Implemented authoritatively in `scripts/Export-AssetJson.ps1` lines 23-24.
+- `[LOCAL]` Implemented authoritatively in `helpers/Build-CompleteStory.ps1` (Stage 2).
 
 ---
 
@@ -29,7 +29,7 @@ Labels: `[FACT]` = source receipt, `[LOCAL]` = local project evidence, `[POLICY]
   ```
 - `[FACT]` `fromjson` does not accept an `<EngineVersion>` argument because the engine version and custom versions are deserialized directly from the JSON header.
 - `[FACT]` Companion `.uexp` writing: `UAsset.Write(outputPath)` automatically writes both `.uasset` and `.uexp` when `UseSeparateBulkDataFiles` is true and `Exports.Count > 0` (`source-receipts.md` §5).
-- `[LOCAL]` Implemented authoritatively in `scripts/Import-ModifiedAssets.ps1` line 22.
+- `[LOCAL]` Implemented authoritatively in `helpers/Build-CompleteStory.ps1` (Stage 4).
 
 ---
 

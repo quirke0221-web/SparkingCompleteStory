@@ -5,7 +5,7 @@
 * **Author:** atenfyr
 * **Repositories:** [atenfyr/UAssetGUI](https://github.com/atenfyr/UAssetGUI) | [atenfyr/UAssetAPI](https://github.com/atenfyr/UAssetAPI)
 * **Role in Project:** Headless JSON export/import and binary serialization for cooked Unreal Engine 5.1.1 assets
-* **Agent Skill:** `.agents/skills/uassetgui-asset-serialization/` (Phase 2)
+* **Agent Skill:** `.agents/skills/uassetgui-asset-serialization/SKILL.md`
 
 ---
 
@@ -35,4 +35,4 @@ If a derived doc and a primary receipt disagree, the receipt wins.
 ---
 
 ## Agent Skill Readiness Status
-* **Status:** Receipts verified and pinned. Ready for Phase 2 skill drafting.
+* **Status:** AUDITED & ACTIVE (`.agents/skills/uassetgui-asset-serialization/SKILL.md`).

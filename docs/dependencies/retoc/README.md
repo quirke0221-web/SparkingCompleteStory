@@ -26,7 +26,7 @@ If a derived doc and a receipt disagree, the receipt wins. Fix the derived doc.
 ## Correction Log
 
 **2026-10-05:** These claims from the first drafts were checked against source and were **[DISPROVEN]**:
-1. "`to-zen` strictly requires `scriptobjects.bin`": it's optional upstream. It is required only by project policy (`Build-IoStore.ps1`).
+1. "`to-zen` strictly requires `scriptobjects.bin`": it's optional upstream. It is required only by project policy (`helpers/Build-CompleteStory.ps1`).
 2. "`verify` validates directory indexes": it only compares chunk hashes.
 3. "`--filter` matches prefixes": it's a substring match.
 4. `unpack` was described as raw chunk extraction: that's `unpack-raw`. Also added the missing commands: `asset-registry`, `print-script-objects`, `dump-test`, `--script-cell`.
@@ -36,4 +36,4 @@ Unverified claims were relabeled as `[HYPOTHESIS]`: single-`.utoc` input failing
 ---
 
 ## Agent Skill Status
-* **Status:** Draft skill written. Awaiting user audit.
+* **Status:** AUDITED & ACTIVE (`.agents/skills/retoc-iostore-packer/SKILL.md`).

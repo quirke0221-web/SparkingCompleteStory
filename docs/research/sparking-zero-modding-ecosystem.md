@@ -29,14 +29,14 @@ The following dependencies were verified via live repository inspection and loca
   * `retoc to-zen`: Converts edited legacy `.uasset/.uexp` files back into valid UE 5.1 `.utoc/.ucas` IoStore containers.
   * `retoc verify`: Compares each chunk's hash against the container's TOC. It does not check directory indexes, dependencies, or in-game loadability. *(Corrected 2026-10-05; see `docs/dependencies/retoc/cli-reference.md` §5.)*
   * `retoc gen-script-objects`: Builds a script-objects global *container* from a `.jmap` reflection dump. It is **not** used by this project's pipeline. The `scriptobjects.bin` used for packing comes from `to-legacy`, and `to-zen` treats it as optional. *(Corrected 2026-10-05.)*
-* **Local Repo Usage:** Directly leveraged in `scripts/Extract-RequiredAssets.ps1`, `scripts/Build-IoStore.ps1`, and `scripts/Verify-IoStore.ps1`.
+* **Local Repo Usage:** Directly leveraged in `helpers/Build-CompleteStory.ps1` (Stages 1, 5, 6) and `helpers/Common.ps1`.
 
 
 ### B. Asset Deserialization: `UAssetGUI` / `UAssetAPI`
 * **Repository:** [atenfyr/UAssetGUI](https://github.com/atenfyr/UAssetGUI)
-* `[HYPOTHESIS]` CLI syntax (`tojson`/`fromjson` argument order, `VER_UE5_1`, `.usmap` mapping name). **Not yet source-audited**; this is Phase 2 prework. Use only `docs/dependencies/uassetgui/` after that audit.
+* `[FACT]` CLI syntax (`tojson`/`fromjson` argument order, `VER_UE5_1`, `.usmap` mapping name) source-audited against upstream @ `4855f8c` (see `docs/dependencies/uassetgui/`).
 * `[LOCAL]` Mapping file `SparkingZERO.usmap`, SHA-256 `B7AE00F54BA558EF7793CABA3437B3E82D64D29A6822C34CE73B4A1F91B2D1C5`.
-* **Local Repo Usage:** Leveraged in `scripts/Export-AssetJson.ps1` and `scripts/Import-ModifiedAssets.ps1`.
+* **Local Repo Usage:** Leveraged in `helpers/Build-CompleteStory.ps1` (Stages 2, 4) and `helpers/Common.ps1`.
 
 ### C. Runtime Scripting & Memory Injection: `RE-UE4SS`
 * **Repository:** [UE4SS-RE/RE-UE4SS](https://github.com/UE4SS-RE/RE-UE4SS). Installed build: `v3.0.1 Beta`, Git SHA `4e5461c` (`evidence/runtime/v0.7-sanitized.log`).

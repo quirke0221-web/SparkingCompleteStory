@@ -12,11 +12,11 @@ This lack of separation caused:
 3. Monolithic scripts that violated single-responsibility principles and file length ceilings.
 
 ## Decision
-1. **Pipeline Partitioning:** The asset build architecture is strictly divided into two decoupled layers:
-   * **Domain Transformation Layer (`scripts/Transform-CompleteStoryAssets.ps1`):** Pure in-memory JSON data transformation. It accepts input JSON paths, validates baseline structures, mutates the registries and character assets, and writes modified JSON to disk. It contains zero external CLI calls.
-   * **Pipeline Orchestration Layer (`scripts/Build-CompleteStory.ps1`):** Master automation cmdlet coordinating external tools (`retoc`, `UAssetGUI`), invoking the transformation script, verifying intermediate artifacts, and packaging release archives.
+1. **Pipeline Partitioning:** The asset build architecture is strictly divided into two decoupled layers (located under `helpers/` per ADR 0008):
+   * **Domain Transformation Layer (`helpers/Transform-CompleteStoryAssets.ps1`):** Pure in-memory JSON data transformation. It accepts input JSON paths, validates baseline structures, mutates the registries and character assets, and writes modified JSON to disk. It contains zero external CLI calls.
+   * **Pipeline Orchestration Layer (`helpers/Build-CompleteStory.ps1`):** Master automation cmdlet coordinating external tools (`retoc`, `UAssetGUI`), invoking the transformation script, verifying intermediate artifacts, and packaging release archives.
 2. **Ephemeral Staging Isolation:** All intermediate extraction, JSON conversion, and compilation steps must occur in `staging/` (which is excluded from Git via `.gitignore`).
-3. **Single Build Entry Point:** Developers and AI agents execute the entire build via a single, parameterized cmdlet (`.\scripts\Build-CompleteStory.ps1`).
+3. **Single Build Entry Point:** Developers and AI agents execute the entire build via a single, parameterized cmdlet (`.\helpers\Build-CompleteStory.ps1`).
 
 ## Consequences
 * **Positive:** Clean modular architecture. The domain mutation logic can be tested in milliseconds using standard JSON assertions.
