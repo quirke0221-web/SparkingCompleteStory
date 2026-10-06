@@ -1,0 +1,126 @@
+use complete_story_cli::transform::character::{transform_character_ast, NEW_OBJECT_NAME, NEW_PACKAGE_NAME};
+use complete_story_cli::transform::chart::transform_chart_ast;
+use complete_story_cli::transform::registry::{transform_registry_ast, ROUTE_KEY};
+use serde_json::{json, Value};
+use std::fs::File;
+use std::io::BufReader;
+use std::path::PathBuf;
+
+fn get_staging_json(name: &str) -> Value {
+    let path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .parent()
+        .unwrap()
+        .parent()
+        .unwrap()
+        .join("staging")
+        .join("json")
+        .join(name);
+
+    let file = File::open(&path).unwrap_or_else(|_| panic!("Failed to open staging JSON at {:?}", path));
+    serde_json::from_reader(BufReader::new(file)).expect("Valid JSON expected")
+}
+
+#[test]
+fn test_chart_transformation_zero_wrapping() {
+    let mut chart_ast = get_staging_json("DragonAdventureIFChartData.json");
+    let res = transform_chart_ast(&mut chart_ast);
+    assert!(res.is_ok(), "Chart transformation failed: {:?}", res.err());
+
+    let records = chart_ast
+        .pointer("/Exports/0/Data/1/Value")
+        .and_then(Value::as_array)
+        .expect("Records array missing");
+
+    // Must be exactly 13 records
+    assert_eq!(records.len(), 13, "Expected 13 records in chart data");
+
+    // 13th entry must be a native 2-element JSON array [StructData, ObjectData]
+    let entry_13 = &records[12];
+    assert!(
+        entry_13.is_array(),
+        "13th chart entry must be a native JSON array, NOT an object wrapper!"
+    );
+    let entry_arr = entry_13.as_array().unwrap();
+    assert_eq!(entry_arr.len(), 2, "13th chart entry must have 2 elements");
+
+    // Verify it is NOT the PowerShell { value: [...], Count: 2 } wrapper bug
+    assert!(
+        entry_13.get("Count").is_none(),
+        "Detected PowerShell 'Count' property bug!"
+    );
+    assert!(
+        entry_13.get("value").is_none(),
+        "Detected PowerShell 'value' property wrapper bug!"
+    );
+
+    // Verify key is 0000_00
+    let key = entry_13
+        .pointer("/0/Value/0/Value")
+        .and_then(Value::as_str)
+        .expect("Missing key in 13th entry");
+    assert_eq!(key, ROUTE_KEY);
+}
+
+#[test]
+fn test_registry_transformation_integrity() {
+    let mut reg_ast = get_staging_json("DragonAdventureIFData.json");
+    let res = transform_registry_ast(&mut reg_ast);
+    assert!(res.is_ok(), "Registry transformation failed: {:?}", res.err());
+
+    let records = reg_ast
+        .pointer("/Exports/0/Data/0/Value")
+        .and_then(Value::as_array)
+        .expect("Records array missing");
+
+    assert_eq!(records.len(), 13, "Expected 13 records in master registry");
+
+    let imports = reg_ast
+        .get("Imports")
+        .and_then(Value::as_array)
+        .expect("Imports array missing");
+
+    assert_eq!(imports.len(), 29, "Expected 29 imports in master registry");
+
+    // Verify package and object imports
+    assert_eq!(imports[27]["ObjectName"], NEW_PACKAGE_NAME);
+    assert_eq!(imports[28]["ObjectName"], NEW_OBJECT_NAME);
+}
+
+#[test]
+fn test_character_transformation_raw_export_preservation() {
+    let mut char_ast = get_staging_json("DAIF_CharaData_0000_00.json");
+
+    let original_data = char_ast
+        .pointer("/Exports/0/Data")
+        .and_then(Value::as_str)
+        .expect("RawExport Data missing")
+        .to_string();
+
+    let res = transform_character_ast(&mut char_ast);
+    assert!(res.is_ok(), "Character transformation failed: {:?}", res.err());
+
+    let exports = char_ast.get("Exports").and_then(Value::as_array).unwrap();
+    assert_eq!(exports[0]["ObjectName"], NEW_OBJECT_NAME);
+
+    // RawExport Data payload must be preserved byte-for-byte
+    let transformed_data = exports[0]["Data"].as_str().unwrap();
+    assert_eq!(
+        original_data, transformed_data,
+        "Base64 Raditz start pointers must be preserved byte-for-byte!"
+    );
+}
+
+#[test]
+fn test_fail_hard_on_malformed_json_zero_mocks() {
+    // Under no circumstance should a malformed AST silently fallback to synthetic/mock data
+    let mut empty_ast = json!({});
+
+    let res1 = transform_character_ast(&mut empty_ast);
+    assert!(res1.is_err(), "Must fail hard on empty character AST");
+
+    let res2 = transform_registry_ast(&mut empty_ast);
+    assert!(res2.is_err(), "Must fail hard on empty registry AST");
+
+    let res3 = transform_chart_ast(&mut empty_ast);
+    assert!(res3.is_err(), "Must fail hard on empty chart AST");
+}

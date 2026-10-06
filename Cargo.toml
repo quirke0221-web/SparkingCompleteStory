@@ -1,0 +1,5 @@
+[workspace]
+members = [
+    "crates/complete-story-cli",
+]
+resolver = "2"
