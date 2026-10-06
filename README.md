@@ -58,7 +58,7 @@ The resulting package is emitted to `dist/CompleteStory-v0.3-Unverum.zip` ready 
 
 Contributors and autonomous AI agents (Codex, Antigravity) must strictly obey the governance invariants in [`AGENTS.md`](AGENTS.md) and [`docs/commit.md`](docs/commit.md):
 1. **Clean Root Invariant:** Only `.gitignore`, `AGENTS.md`, and `README.md` may reside in the root.
-2. **File Length Ceiling:** Strictly **<= 300 lines max per file** across all code and documentation.
+2. **Code File Length Ceiling:** Strictly **<= 300 lines max per code file** (`.ps1`, `.lua`, etc.). Documentation files (`.md`) are exempt to ensure thoroughness.
 3. **Intent Alignment Gate:** Plain-English conversational alignment before editing code; zero technical jargon traps.
 4. **Zero Slate Reflection:** Runtime hooks must never reflect transient Slate/UMG widgets across frames (ADR 0004).
 

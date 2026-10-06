@@ -175,4 +175,4 @@ sequenceDiagram
 
 1. **Deterministic Buildability:** Running `.\helpers\Build-CompleteStory.ps1` from a clean clone with valid prerequisites produces a bit-for-bit verified container passing `retoc verify`.
 2. **Crash Immunity:** Zero dereferencing of transient Slate widget memory; zero native access violations (`0xC0000005`).
-3. **Maintainability Ceiling:** Every implementation script and documentation file strictly adheres to the **<= 300 lines ceiling** (`AGENTS.md` §0.4).
+3. **Maintainability Ceiling:** Every implementation script (`.ps1`, `.lua`) strictly adheres to the **<= 300 lines ceiling** (`AGENTS.md` §0.4). Architectural, research, and specification documents are exempt to ensure thorough and complete context.

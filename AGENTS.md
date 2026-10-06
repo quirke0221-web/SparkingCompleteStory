@@ -12,8 +12,9 @@
 3. **Clean Root Invariant:**
    * The repository root must remain pristine. Only standard project configuration files, `README.md`, `AGENTS.md`, and `.gitignore` may reside in the root.
    * All documentation must reside within `docs/` according to the Documentation Taxonomy.
-4. **File Length Ceiling:**
-   * Strictly **300 lines max per file**. Decompose monolithic files into focused, modular domain components before exceeding this limit.
+4. **Code File Length Ceiling:**
+   * Strictly **300 lines max per code/script file** (`.ps1`, `.lua`, `.py`, `.c`, etc.). Decompose monolithic implementation files into focused, modular domain components before exceeding this limit.
+   * Documentation files (`.md` in `docs/`) are explicitly **exempt** from this ceiling to prevent artificial truncation of specifications, architecture plans, research receipts, and operational runbooks.
 5. **Commit Standards & Turn-Boundary Cadence:**
    * Use Conventional Commits 1.0.0 (`feat:`, `fix:`, `chore:`, `docs:`, `test:`) formatted strictly per [`docs/commit.md`](docs/commit.md).
    * **Turn-Boundary Commit Invariant:** An agent must never leave dirty, uncommitted changes in the working tree at the conclusion of a turn. Every completed, verified milestone or bug fix must be committed and pushed to `origin main` before ending the turn, strictly following the operational cadence in [`docs/git-workflow.md`](docs/git-workflow.md).
