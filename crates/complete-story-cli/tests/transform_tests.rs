@@ -7,14 +7,18 @@ use std::io::BufReader;
 use std::path::PathBuf;
 
 fn get_staging_json(name: &str) -> Value {
-    let path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+    let root = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .parent()
         .unwrap()
         .parent()
         .unwrap()
-        .join("staging")
-        .join("json")
-        .join(name);
+        .to_path_buf();
+
+    let path = if root.join("build").join("staging").join("json").join(name).exists() {
+        root.join("build").join("staging").join("json").join(name)
+    } else {
+        root.join("staging").join("json").join(name)
+    };
 
     let file = File::open(&path).unwrap_or_else(|_| panic!("Failed to open staging JSON at {:?}", path));
     serde_json::from_reader(BufReader::new(file)).expect("Valid JSON expected")

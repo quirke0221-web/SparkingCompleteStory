@@ -35,7 +35,11 @@ impl Config {
             steam_default
         };
 
-        let tools_dir = project_root.join("tools");
+        let tools_dir = if project_root.join(".tools").exists() {
+            project_root.join(".tools")
+        } else {
+            project_root.join("tools")
+        };
         let retoc_exe = tools_dir.join("retoc").join("retoc.exe");
         let uassetgui_exe = tools_dir.join("UAssetGUI.exe");
         let usmap_path = tools_dir
@@ -43,11 +47,12 @@ impl Config {
             .join("Mappings")
             .join("SparkingZERO.usmap");
 
-        let staging_dir = project_root.join("staging");
+        let build_dir = project_root.join("build");
+        let staging_dir = build_dir.join("staging");
         let staging_legacy_dir = staging_dir.join("legacy");
         let staging_json_dir = staging_dir.join("json");
         let staging_zen_dir = staging_dir.join("zen");
-        let dist_dir = project_root.join("dist");
+        let dist_dir = build_dir.join("dist");
         let runtime_mod_src = project_root.join("CompleteStory");
 
         let target_paks_mod_dir = steam_game_root
