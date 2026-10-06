@@ -76,7 +76,7 @@ An agent is **strictly FORBIDDEN** from proposing or writing implementation code
 3. **Strict Scope Creep Invariant:**
    * The agent must never modify game parameters, assets, or logic outside the agreed intent.
 4. **Verifiable In-Game Delivery:**
-   * Upon completing any milestone or bug fix, the agent must build and deploy the changes via `helpers/` and provide simple, step-by-step instructions for how the user can test the change in-game.
+   * Upon completing any milestone or bug fix, the agent must build and deploy the changes via `crates/complete-story-cli` (`cargo run -p complete-story-cli -- build --deploy`) and provide simple, step-by-step instructions for how the user can test the change in-game.
 
 ---
 
