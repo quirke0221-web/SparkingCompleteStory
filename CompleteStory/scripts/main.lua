@@ -1,16 +1,16 @@
--- Dragon Ball: Sparking! ZERO - Complete Story runtime trace
+-- Dragon Ball: Sparking! ZERO - Complete Story Runtime Mod
 -- Target: RE-UE4SS v3.0.1 Beta (UE 5.1.1)
 --
--- Gate 1 diagnostic: compare the stock and Complete Story native menu paths.
--- This script reads only hook context and parameters supplied by verified
--- UFunctions. It does not inspect Slate/UMG trees or alter native results.
+-- Responsibilities:
+-- 1. Intercept SSDragonAdventureIFCSManager:IsPlayable to display "New Game" instead of "Unlock".
+-- 2. Intercept SSDragonAdventureIFCSManager:IsModeStart to authorize mode start and prevent the NEO store dialog.
+-- 3. GameThread-safe execution without Slate/UMG widget reflection (ADR 0004).
 
 local MOD_TAG = "[CompleteStory]"
 local MANAGER_PATH = "/Script/SS.SSDragonAdventureIFCSManager:"
 local MENU_PATH = "/Script/SS.SSBuiltInMenu:"
 
 local sequence = 0
-local hook_ids = {}
 
 local function log_event(name, details)
     sequence = sequence + 1
@@ -18,22 +18,10 @@ local function log_event(name, details)
         details and (" " .. details) or ""))
 end
 
-local function unwrap(value)
-    if value == nil then return nil end
-    local ok, inner = pcall(function() return value:get() end)
-    if ok then return inner end
-    return value
-end
-
-local function safe_bool(value)
-    local inner = unwrap(value)
-    if inner == true then return "true" end
-    if inner == false then return "false" end
-    return "<unavailable>"
-end
-
 local function safe_name(value)
-    local object = unwrap(value)
+    if value == nil then return "<nil>" end
+    local ok, inner = pcall(function() return value:get() end)
+    local object = ok and inner or value
     if object == nil then return "<nil>" end
     local valid_ok, valid = pcall(function() return object:IsValid() end)
     if not valid_ok or not valid then return "<invalid>" end
@@ -42,63 +30,71 @@ local function safe_name(value)
     return "<unnamed>"
 end
 
-local function register_native_hook(path, pre_callback, post_callback)
-    local ok, pre_id, post_id = pcall(function()
-        if post_callback ~= nil then
-            return RegisterHook(path, pre_callback, post_callback)
-        end
-        return RegisterHook(path, pre_callback)
+local function init_mod()
+    -- Hook 1: IsPlayable -> Controls carousel button label (Unlock vs New Game)
+    local ok_play, pre_play, post_play = pcall(function()
+        return RegisterHook(
+            MANAGER_PATH .. "IsPlayable",
+            function(context)
+                log_event("IS_PLAYABLE_PRE", "context=" .. safe_name(context))
+                return nil
+            end,
+            function(context, return_value)
+                log_event("IS_PLAYABLE_POST", "Overriding ReturnValue to true")
+                pcall(function()
+                    if return_value ~= nil and type(return_value.set) == "function" then
+                        return_value:set(true)
+                    end
+                end)
+                return true
+            end
+        )
     end)
-    if not ok then
-        log_event("HOOK_FAILED", string.format("path=%s error=%s", path, tostring(pre_id)))
-        return false
+    if not ok_play then
+        log_event("HOOK_FAILED", "IsPlayable error=" .. tostring(pre_play))
+    else
+        log_event("HOOK_REGISTERED", string.format("IsPlayable pre=%s post=%s", tostring(pre_play), tostring(post_play)))
     end
-    hook_ids[path] = { pre_id, post_id }
-    log_event("HOOK_REGISTERED", string.format("path=%s pre=%s post=%s",
-        path, tostring(pre_id), tostring(post_id)))
-    return true
-end
 
-local function trace_parameterless(name)
-    return function(context)
-        log_event(name .. "_PRE", "context=" .. safe_name(context))
-        return nil
+    -- Hook 2: IsModeStart -> Controls authorization to start campaign (bypasses NEO store modal)
+    local ok_start, pre_start, post_start = pcall(function()
+        return RegisterHook(
+            MANAGER_PATH .. "IsModeStart",
+            function(context)
+                log_event("IS_MODE_START_PRE", "context=" .. safe_name(context))
+                return nil
+            end,
+            function(context, return_value)
+                log_event("IS_MODE_START_POST", "Overriding ReturnValue to true")
+                pcall(function()
+                    if return_value ~= nil and type(return_value.set) == "function" then
+                        return_value:set(true)
+                    end
+                end)
+                return true
+            end
+        )
+    end)
+    if not ok_start then
+        log_event("HOOK_FAILED", "IsModeStart error=" .. tostring(pre_start))
+    else
+        log_event("HOOK_REGISTERED", string.format("IsModeStart pre=%s post=%s", tostring(pre_start), tostring(post_start)))
     end
+
+    -- Hook 3: Button decision logging
+    pcall(function()
+        RegisterHook(
+            MENU_PATH .. "NewDecideButton",
+            function(context, menu_button)
+                log_event("NEW_DECIDE_BUTTON_PRE", string.format("context=%s button=%s",
+                    safe_name(context), safe_name(menu_button)))
+                return nil
+            end
+        )
+    end)
+
+    log_event("MOD_READY", "IsPlayable and IsModeStart active")
 end
 
-local function trace_bool_result(name)
-    return function(context, return_value)
-        log_event(name .. "_POST", string.format("context=%s native_return=%s",
-            safe_name(context), safe_bool(return_value)))
-        return nil
-    end
-end
-
-local function init_trace()
-    register_native_hook(
-        MANAGER_PATH .. "IsPlayable",
-        trace_parameterless("IS_PLAYABLE"),
-        trace_bool_result("IS_PLAYABLE")
-    )
-    register_native_hook(
-        MANAGER_PATH .. "IsModeStart",
-        trace_parameterless("IS_MODE_START"),
-        trace_bool_result("IS_MODE_START")
-    )
-    register_native_hook(MANAGER_PATH .. "OnListUp", trace_parameterless("LIST_UP"))
-    register_native_hook(MANAGER_PATH .. "OnListDown", trace_parameterless("LIST_DOWN"))
-    register_native_hook(MANAGER_PATH .. "SetButtonFocus", trace_parameterless("SET_BUTTON_FOCUS"))
-    register_native_hook(MENU_PATH .. "DecideButton", trace_parameterless("DECIDE_BUTTON"))
-    register_native_hook(
-        MENU_PATH .. "NewDecideButton",
-        function(context, menu_button)
-            log_event("NEW_DECIDE_BUTTON_PRE", string.format("context=%s button=%s",
-                safe_name(context), safe_name(menu_button)))
-            return nil
-        end
-    )
-    log_event("TRACE_READY", "mode=read-only")
-end
-
-log_event("INITIALIZING", "version=gate-1")
-ExecuteInGameThread(init_trace)
+log_event("INITIALIZING", "version=v0.8-playable-modestart")
+ExecuteInGameThread(init_mod)
