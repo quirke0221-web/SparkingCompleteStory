@@ -5,6 +5,7 @@
 /dist/
 /staging/
 /target/
+/.tools/
 /tools/
 /test_backups/
 /backup save/
