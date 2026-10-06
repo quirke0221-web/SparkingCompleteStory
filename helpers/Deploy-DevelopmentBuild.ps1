@@ -32,6 +32,8 @@ if (-not $BuildDirectory) { $BuildDirectory = $dirs.Dist }
 $pakTarget     = Join-Path $config.GameRoot 'SparkingZERO\Content\Paks\~mods\CompleteStory'
 $runtimeTarget = Join-Path $config.GameRoot 'SparkingZERO\Binaries\Win64\Mods\CompleteStory'
 $runtimeSource = Join-Path $PSScriptRoot '..\CompleteStory'
+$modsList      = Join-Path $config.GameRoot 'SparkingZERO\Binaries\Win64\Mods\mods.txt'
+$modEntryRegex = '^\s*CompleteStory\s*:\s*[01]\s*$'
 $pakFiles      = @('CompleteStory_P.pak', 'CompleteStory_P.utoc', 'CompleteStory_P.ucas')
 
 if ($Install) {
@@ -43,13 +45,17 @@ if ($Install) {
     $backup    = Join-Path $BackupRoot "install-$timestamp"
 
     if ($PSCmdlet.ShouldProcess($config.GameRoot, 'Backup existing CompleteStory mod files and deploy new build')) {
-        if ((Test-Path -LiteralPath $pakTarget) -or (Test-Path -LiteralPath $runtimeTarget)) {
+        if ((Test-Path -LiteralPath $pakTarget) -or (Test-Path -LiteralPath $runtimeTarget) -or
+            (Test-Path -LiteralPath $modsList)) {
             $null = New-Item -ItemType Directory -Force -Path $backup
             if (Test-Path -LiteralPath $pakTarget) {
                 Copy-Item -LiteralPath $pakTarget -Destination (Join-Path $backup 'ContentMods') -Recurse
             }
             if (Test-Path -LiteralPath $runtimeTarget) {
                 Copy-Item -LiteralPath $runtimeTarget -Destination (Join-Path $backup 'RuntimeMod') -Recurse
+            }
+            if (Test-Path -LiteralPath $modsList) {
+                Copy-Item -LiteralPath $modsList -Destination (Join-Path $backup 'mods.txt')
             }
         }
 
@@ -61,7 +67,11 @@ if ($Install) {
 
         # Deploy runtime mod
         $null = New-Item -ItemType Directory -Force -Path $runtimeTarget
-        Copy-Item -LiteralPath (Join-Path $runtimeSource '*') -Destination $runtimeTarget -Recurse -Force
+        Copy-Item -Path (Join-Path $runtimeSource '*') -Destination $runtimeTarget -Recurse -Force
+
+        $modLines = if (Test-Path -LiteralPath $modsList) { @(Get-Content -LiteralPath $modsList) } else { @() }
+        $modLines = @($modLines | Where-Object { $_ -notmatch $modEntryRegex }) + 'CompleteStory : 1'
+        [IO.File]::WriteAllLines($modsList, $modLines, [Text.UTF8Encoding]::new($false))
 
         Write-Output "Successfully deployed Complete Story container to: $pakTarget"
         Write-Output "Successfully deployed Complete Story runtime mod to: $runtimeTarget"
@@ -70,8 +80,10 @@ if ($Install) {
 elseif ($Uninstall) {
     $hasPak     = Test-Path -LiteralPath $pakTarget
     $hasRuntime = Test-Path -LiteralPath $runtimeTarget
+    $hasModEntry = (Test-Path -LiteralPath $modsList) -and
+        [bool](Select-String -LiteralPath $modsList -Pattern $modEntryRegex -Quiet)
 
-    if ($hasPak -or $hasRuntime) {
+    if ($hasPak -or $hasRuntime -or $hasModEntry) {
         $timestamp = (Get-Date -Format 'yyyyMMdd-HHmmss')
         $backup    = Join-Path $BackupRoot "uninstall-$timestamp"
 
@@ -84,6 +96,11 @@ elseif ($Uninstall) {
             if ($hasRuntime) {
                 Copy-Item -LiteralPath $runtimeTarget -Destination (Join-Path $backup 'RuntimeMod') -Recurse
                 Remove-Item -LiteralPath $runtimeTarget -Recurse -Force
+            }
+            if ($hasModEntry) {
+                Copy-Item -LiteralPath $modsList -Destination (Join-Path $backup 'mods.txt')
+                $modLines = @(Get-Content -LiteralPath $modsList) | Where-Object { $_ -notmatch $modEntryRegex }
+                [IO.File]::WriteAllLines($modsList, $modLines, [Text.UTF8Encoding]::new($false))
             }
             Write-Output "Successfully uninstalled CompleteStory (Backup: $backup)"
         }
