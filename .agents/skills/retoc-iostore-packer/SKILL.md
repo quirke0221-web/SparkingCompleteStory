@@ -43,7 +43,7 @@ containers. Only retoc is approved in `docs/dependencies/dependencies.md`.
 ### 2.1 Targeted extraction: `to-legacy`
 
 ```powershell
-# $retoc   = configured RetocPath (config/project.local.psd1)
+# $retoc   = configured RetocPath (tools/retoc/retoc.exe)
 # $paks    = "<GameRoot>\SparkingZERO\Content\Paks"
 # $aes     = value of $env:SPARKING_ZERO_AES_KEY (never hardcode, never echo)
 & $retoc --aes-key $aes to-legacy --version UE5_1 `

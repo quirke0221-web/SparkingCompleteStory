@@ -77,17 +77,17 @@ The mod build and packaging lifecycle is coordinated end-to-end by [`crates/comp
 - Compiles `staging/container/` into `dist/CompleteStory_P.{pak,utoc,ucas}`.
 
 ### Stage 6: Verification & Release Packaging
-- **Tool:** [`retoc-iostore-packer`](../retoc-iostore-packer/SKILL.md) (`retoc verify`) & [`unverum-mod-packager`](../unverum-mod-packager/SKILL.md)
-- **Automated by:** `helpers/Build-CompleteStory.ps1` Stage 6
+- **Tool:** [`retoc-iostore-packer`](../retoc-iostore-packer/SKILL.md) (`retoc verify`) & [`zip-archive-packager`](../zip-archive-packager/SKILL.md)
+- **Automated by:** `complete-story-cli build` (Stage 6)
 - Runs `retoc verify` on the compiled `.utoc`.
 - Verifies non-zero file sizes across `.pak`, `.utoc`, and `.ucas`.
-- Packages the Unverum-ready release archive `dist/CompleteStory-v0.3-Unverum.zip` ensuring no third-party bypass DLLs are bundled (ADR 0002).
+- Packages the Unverum-ready release archive `dist/CompleteStory-Release.zip` ensuring no third-party bypass DLLs are bundled (ADR 0002).
 
 ---
 
 ## 4. Pipeline Pre-Flight Checklist
 
-- [ ] Local environment configuration exists and is valid (`config/project.local.psd1`).
+- [ ] Native CLI build toolchain verified (`cargo check -p complete-story-cli`).
 - [ ] Dependencies verified in matrix: `retoc`, `UAssetGUI`, `RE-UE4SS`, `Unverum`.
 - [ ] `SparkingZERO.usmap` is in place.
 - [ ] Target AES key is set in environment (`$env:SPARKING_ZERO_AES_KEY`).

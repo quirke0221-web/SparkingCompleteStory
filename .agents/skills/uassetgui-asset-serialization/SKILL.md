@@ -37,7 +37,7 @@ Every rule below cites its empirical receipt. `[P:Lx]` = line `x` of `UAssetGUI/
 ### 2.1 Export to JSON: `tojson`
 
 ```powershell
-# $uassetgui = configured UAssetGUIPath (config/project.local.psd1)
+# $uassetgui = configured UAssetGUIPath (tools/UAssetGUI.exe)
 # $source    = path to extracted .uasset
 # $dest      = path to output .json
 # $mapping   = bare name of mapping file, e.g. 'SparkingZERO'
