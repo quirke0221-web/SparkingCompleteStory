@@ -22,14 +22,15 @@ Every tool action in the pipeline is strictly delegated to its dedicated Tier-2 
 ```text
 [TIER 1: sparking-zero-mod-pipeline]
   │
-  ├── 1. Extract IoStore Assets      ──> retoc-iostore-packer
-  ├── 2. Serialize .uasset to JSON   ──> uassetgui-asset-serialization
-  ├── 3. Modify JSON Schema          ──> uassetgui-asset-serialization
-  ├── 4. Reconstruct Binary Assets   ──> uassetgui-asset-serialization
-  ├── 5. Pack Zen IoStore Container  ──> retoc-iostore-packer
-  ├── 6. Verify Container Integrity  ──> retoc-iostore-packer
-  ├── 7. Package for Distribution    ──> unverum-mod-packager
-  └── 8. Runtime Scripting & Hooks   ──> ue4ss-runtime-scripting
+  ├── 1. Build Orchestrator & CLI    ──> rust-pipeline-builder (crates/complete-story-cli)
+  ├── 2. Extract IoStore Assets      ──> retoc-iostore-packer
+  ├── 3. Serialize .uasset to JSON   ──> uassetgui-asset-serialization
+  ├── 4. Modify JSON Schema (AST)    ──> rust-pipeline-builder (transform/)
+  ├── 5. Reconstruct Binary Assets   ──> uassetgui-asset-serialization
+  ├── 6. Pack Zen IoStore Container  ──> retoc-iostore-packer
+  ├── 7. Verify Container Integrity  ──> retoc-iostore-packer
+  ├── 8. Package for Distribution    ──> unverum-mod-packager
+  └── 9. Runtime Scripting & Hooks   ──> ue4ss-runtime-scripting
 ```
 
 ---
@@ -39,17 +40,17 @@ Every tool action in the pipeline is strictly delegated to its dedicated Tier-2 
 1. **Vanilla Save Data Protection:** Mod modifications must **never** corrupt, invalidate, or overwrite the player's stock save data (`MainGameSaveData`).
 2. **Stock Campaign Isolation:** All 12 stock character Episode Battle campaigns (Goku, Vegeta, Gohan, Piccolo, Future Trunks, Frieza, Goku Black, Jiren, etc.) must remain 100% playable and untampered.
 3. **Vanilla Asset Reuse:** 100% of audio, cutscenes, and character assets must reuse stock assets from the base game.
-4. **Clean Staging Invariant:** Never modify files directly inside the game's installation or `~mods/` directory. All work occurs in `scratch/`, `staging/`, or `dist/`.
+4. **Clean Staging Invariant:** Never modify files directly inside the game's installation or `~mods/` directory. All work occurs in `staging/` or `dist/`.
 
 ---
 
 ## 3. The 6-Stage Mod Engineering Lifecycle
 
-The mod build and packaging lifecycle is coordinated end-to-end by [`helpers/Build-CompleteStory.ps1`](file:///c:/echor/projects/SparkingCompleteStory/helpers/Build-CompleteStory.ps1):
+The mod build and packaging lifecycle is coordinated end-to-end by [`crates/complete-story-cli`](file:///c:/echor/projects/SparkingCompleteStory/crates/complete-story-cli) (via `cargo run -p complete-story-cli -- build --deploy`):
 
 ### Stage 1: Targeted Extraction
 - **Tool:** [`retoc-iostore-packer`](../retoc-iostore-packer/SKILL.md) (`retoc to-legacy --version UE5_1`)
-- **Automated by:** `helpers/Build-CompleteStory.ps1` Stage 1
+- **Automated by:** `complete-story-cli build` (Stage 1)
 - Extracts only the targeted stock asset packages (`DragonAdventureIFData`, `DragonAdventureIFChartData`, character data) and `scriptobjects.bin` using substring `--filter` flags into `staging/legacy/`.
 
 ### Stage 2: JSON Deserialization
