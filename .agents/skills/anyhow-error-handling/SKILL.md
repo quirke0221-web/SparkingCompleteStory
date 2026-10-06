@@ -82,5 +82,6 @@ pub fn run_checked(cmd: &mut Command, label: &str) -> Result<String> {
 | Forbidden | Why (Receipt) | Do Instead |
 |---|---|---|
 | Using `.unwrap()` on subprocess or I/O results | Causes immediate, unhelpful panics without error context | Use `?` operator returning `anyhow::Result` |
+| Falling back to fake/mock/synthetic data on failure | Masks real defects, creates invisible bugs, and blocks diagnostics | Fail hard immediately (`bail!`) with path, command, and stderr |
 | Calling `std::process::exit(1)` directly in helper functions | Skips RAII drop destructors and truncates logs | Return `Result<()>` and let `main()` exit cleanly |
 | Silently ignoring child process failures | Recreates the PowerShell silent failure bug | Assert `output.status.success()` or `bail!` |
