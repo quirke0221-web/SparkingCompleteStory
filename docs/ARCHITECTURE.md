@@ -55,6 +55,29 @@ flowchart TB
 3. **Engine Memory Safety:** Playability is resolved via native UFunction hooks on GameThread; transient Slate widget reflection is strictly prohibited (ADR 0004).
 4. **Community Tool Delegation:** Container packing and mod distribution are delegated to verified community tools (`retoc`, `Unverum`) without custom manifests (ADR 0002).
 
+### 1.2 System Composition & Community Archetype Boundaries
+
+By auditing the wider modding ecosystem ([`sparking-zero-modding-ecosystem.md`](research/case-studies/sparking-zero-modding-ecosystem.md)), Complete Story is architecturally designed as a **Hybrid System bridging two community archetypes**:
+
+```text
+COMPLETE STORY HYBRID ARCHITECTURE
+├── 1. OFFLINE DATA SPLICER (Community Archetype C - LostImbecile Pattern)
+│   └── helpers/Build-CompleteStory.ps1 & Transform-CompleteStoryAssets.ps1
+│       └── Domain: 100% responsible for CONTENT (tables, route nodes, event graphs)
+│
+└── 2. IN-ENGINE RUNTIME HOOK (Community Archetype A - AccessForge Pattern)
+    └── CompleteStory/scripts/main.lua
+        └── Domain: 100% responsible for BEHAVIOR (menu focus, unlocking, save safety)
+```
+
+#### Strict Responsibility Boundaries (Anti-Drift Guardrails)
+1. **Never Solve Content Problems in Lua:** Do not write runtime scripts that attempt to synthesize cutscene events, battle conditions, or character data in memory. This causes native engine crashes (`0xC0000005`). Content must be serialized into IoStore containers offline via Subsystem 1.
+2. **Never Solve Behavior Problems in the `.pak`:** Do not assume mounting a container is sufficient to launch a custom campaign. The game's native C++ menu code ignores unlisted character keys without Subsystem 3's runtime hook forcing focus to Goku (Mini).
+3. **Archetype B Guardrail (Anti-Hallucination Gate):**
+   * *Status:* **STRICTLY OUT OF SCOPE.**
+   * *Rationale:* Goku (Mini) character assets, 3D meshes, skeleton rigs, voice lines, and animations are already present in vanilla retail game files.
+   * *Extension Criteria:* Mod authoring via Unreal Engine SDK projects (Archetype B) is only permitted if a formal requirement introduces non-vanilla 3D models or custom skeletal animations. Agents are strictly barred from introducing Unreal Editor dependencies for data-only modifications.
+
 ---
 
 ## 2. Subsystem Decomposition
