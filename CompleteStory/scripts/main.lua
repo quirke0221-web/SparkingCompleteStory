@@ -1,101 +1,104 @@
--- Dragon Ball: Sparking! ZERO - Complete Story Runtime Mod
+-- Dragon Ball: Sparking! ZERO - Complete Story runtime trace
 -- Target: RE-UE4SS v3.0.1 Beta (UE 5.1.1)
 --
--- Responsibilities:
--- 1. Safely intercept /Script/SS.SSDragonAdventureIFCSManager:IsPlayable on the GameThread.
--- 2. Query native manager properties via protected calls (pcall) without reflecting UI widgets (ADR 0004).
--- 3. Override ReturnValue to true strictly for Complete Story (route key 0000_00).
--- 4. Preserve vanilla behavior (nil return) for all 12 stock character campaigns.
+-- Gate 1 diagnostic: compare the stock and Complete Story native menu paths.
+-- This script reads only hook context and parameters supplied by verified
+-- UFunctions. It does not inspect Slate/UMG trees or alter native results.
 
 local MOD_TAG = "[CompleteStory]"
-local TARGET_ROUTE_KEY = "0000_00"
-local HOOK_FUNCTION = "/Script/SS.SSDragonAdventureIFCSManager:IsPlayable"
+local MANAGER_PATH = "/Script/SS.SSDragonAdventureIFCSManager:"
+local MENU_PATH = "/Script/SS.SSBuiltInMenu:"
 
-local last_logged_key = nil
-local hook_registered = false
+local sequence = 0
+local hook_ids = {}
 
-local function log_line(message)
-    print(string.format("%s %s\n", MOD_TAG, message))
+local function log_event(name, details)
+    sequence = sequence + 1
+    print(string.format("%s TRACE %04d %s%s\n", MOD_TAG, sequence, name,
+        details and (" " .. details) or ""))
 end
 
-local function unwrap(context)
-    if context == nil then return nil end
-    local ok, value = pcall(function() return context:get() end)
-    if ok and value ~= nil then return value end
-    return context
+local function unwrap(value)
+    if value == nil then return nil end
+    local ok, inner = pcall(function() return value:get() end)
+    if ok then return inner end
+    return value
 end
 
-local function is_valid(object)
-    if object == nil then return false end
-    local ok, result = pcall(function() return object:IsValid() end)
-    return ok and result == true
+local function safe_bool(value)
+    local inner = unwrap(value)
+    if inner == true then return "true" end
+    if inner == false then return "false" end
+    return "<unavailable>"
 end
 
--- Safely inspect native C++ properties on SSDragonAdventureIFCSManager
--- Strictly BANNED per ADR 0004: FindAllOf("TextBlock"), UI panel reflection, and Slate scraping.
-local function resolve_focused_route_key(manager)
-    if not is_valid(manager) then return nil end
-
-    -- Probe 1: Direct FName / Key struct property on manager if exposed
-    local ok_key, key_prop = pcall(function() return manager.SelectCharacterKey end)
-    if ok_key and key_prop ~= nil then
-        local to_str_ok, key_str = pcall(function() return key_prop:ToString() end)
-        if to_str_ok and key_str ~= nil and key_str ~= "" then
-            return key_str
-        end
-    end
-
-    -- Probe 2: CurrentCharacterData pointer -> Key resolution
-    local ok_data, char_data = pcall(function() return manager.CurrentCharacterData end)
-    if ok_data and is_valid(char_data) then
-        local name_ok, data_name = pcall(function() return char_data:GetFullName() end)
-        if name_ok and data_name ~= nil and string.find(data_name, "DAIF_CharaData_CompleteStory", 1, true) then
-            return TARGET_ROUTE_KEY
-        end
-    end
-
-    return nil
+local function safe_name(value)
+    local object = unwrap(value)
+    if object == nil then return "<nil>" end
+    local valid_ok, valid = pcall(function() return object:IsValid() end)
+    if not valid_ok or not valid then return "<invalid>" end
+    local name_ok, name = pcall(function() return object:GetFullName() end)
+    if name_ok and name ~= nil then return tostring(name) end
+    return "<unnamed>"
 end
 
-local function is_playable_post(context)
-    local manager = unwrap(context)
-    if not is_valid(manager) then return nil end
-
-    local route_key = resolve_focused_route_key(manager)
-
-    if route_key ~= last_logged_key then
-        last_logged_key = route_key
-        log_line(string.format("IsPlayable evaluated; resolved route_key=%s", route_key or "<native/vanilla>"))
-    end
-
-    -- Guarded override: unlock strictly Complete Story
-    if route_key == TARGET_ROUTE_KEY then
-        log_line("Overriding IsPlayable ReturnValue to true for Complete Story (0000_00)")
-        return true
-    end
-
-    -- Return nil to let Bandai's native C++ save validation govern all 12 stock characters
-    return nil
-end
-
-local function init_mod()
-    if hook_registered then return end
-
+local function register_native_hook(path, pre_callback, post_callback)
     local ok, pre_id, post_id = pcall(function()
-        return RegisterHook(
-            HOOK_FUNCTION,
-            function(context) return nil end,
-            is_playable_post
-        )
+        if post_callback ~= nil then
+            return RegisterHook(path, pre_callback, post_callback)
+        end
+        return RegisterHook(path, pre_callback)
     end)
+    if not ok then
+        log_event("HOOK_FAILED", string.format("path=%s error=%s", path, tostring(pre_id)))
+        return false
+    end
+    hook_ids[path] = { pre_id, post_id }
+    log_event("HOOK_REGISTERED", string.format("path=%s pre=%s post=%s",
+        path, tostring(pre_id), tostring(post_id)))
+    return true
+end
 
-    if ok then
-        hook_registered = true
-        log_line(string.format("Registered native hook on %s (pre=%s, post=%s)", HOOK_FUNCTION, tostring(pre_id), tostring(post_id)))
-    else
-        log_line(string.format("FATAL: Failed to register hook on %s: %s", HOOK_FUNCTION, tostring(pre_id)))
+local function trace_parameterless(name)
+    return function(context)
+        log_event(name .. "_PRE", "context=" .. safe_name(context))
+        return nil
     end
 end
 
-log_line("Initializing Complete Story runtime module (RE-UE4SS v3.0.1 Beta)")
-ExecuteInGameThread(init_mod)
+local function trace_bool_result(name)
+    return function(context, return_value)
+        log_event(name .. "_POST", string.format("context=%s native_return=%s",
+            safe_name(context), safe_bool(return_value)))
+        return nil
+    end
+end
+
+local function init_trace()
+    register_native_hook(
+        MANAGER_PATH .. "IsPlayable",
+        trace_parameterless("IS_PLAYABLE"),
+        trace_bool_result("IS_PLAYABLE")
+    )
+    register_native_hook(
+        MANAGER_PATH .. "IsModeStart",
+        trace_parameterless("IS_MODE_START"),
+        trace_bool_result("IS_MODE_START")
+    )
+    register_native_hook(MANAGER_PATH .. "OnListUp", trace_parameterless("LIST_UP"))
+    register_native_hook(MANAGER_PATH .. "OnListDown", trace_parameterless("LIST_DOWN"))
+    register_native_hook(MANAGER_PATH .. "SetButtonFocus", trace_parameterless("SET_BUTTON_FOCUS"))
+    register_native_hook(MENU_PATH .. "DecideButton", trace_parameterless("DECIDE_BUTTON"))
+    register_native_hook(
+        MENU_PATH .. "NewDecideButton",
+        function(context, menu_button)
+            log_event("NEW_DECIDE_BUTTON_PRE", string.format("context=%s button=%s",
+                safe_name(context), safe_name(menu_button)))
+            return nil
+        end
+    )
+    log_event("TRACE_READY", "mode=read-only")
+end
+
+log_event("INITIALIZING", "version=gate-1")
+ExecuteInGameThread(init_trace)
