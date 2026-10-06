@@ -12,7 +12,7 @@ Epistemic labels (see `AGENTS.md` §1.3):
 
 ## 1. Targeted Extraction (`to-legacy`)
 
-Local implementation: `helpers/Build-CompleteStory.ps1` (Stage 1).
+Local implementation: `crates/complete-story-cli/src/extract.rs` (Stage 1).
 
 ```powershell
 & $retoc --aes-key $aes to-legacy --version UE5_1 `
@@ -22,9 +22,9 @@ Local implementation: `helpers/Build-CompleteStory.ps1` (Stage 1).
 
 - `[FACT]` `--aes-key` is a global option and goes before `to-legacy`.
 - `[LOCAL]` The key comes from `$env:SPARKING_ZERO_AES_KEY`. Errors redact arguments so
-  the key is never echoed (`helpers/Common.ps1` L34-L45).
+  the key is never echoed (`crates/complete-story-cli/src/process.rs`).
 - `[OBSERVATION]` The local pipeline needs an AES key to read Sparking! ZERO's stock containers
-  (`helpers/Build-CompleteStory.ps1` L38-L41). Upstream makes no game-specific statement.
+  (`crates/complete-story-cli/src/config.rs`). Upstream makes no game-specific statement.
 - `[FACT]` `--filter` is a substring match. `DragonAdventureIFData` would also match a
   hypothetical `DragonAdventureIFDataFoo`. Use full package paths.
 - `[LOCAL]` Filters use the on-disk path (`SparkingZERO/Content/...`), not `/Game/...`.
@@ -40,7 +40,7 @@ Local implementation: `helpers/Build-CompleteStory.ps1` (Stage 1).
 
 ## 2. Container Compilation (`to-zen`)
 
-Local implementation: `helpers/Build-CompleteStory.ps1` (Stage 5).
+Local implementation: `crates/complete-story-cli/src/container.rs` (Stage 5).
 
 ```powershell
 & $retoc to-zen --version UE5_1 $stageDir (Join-Path $distDir 'CompleteStory_P.utoc')
@@ -50,7 +50,7 @@ Required staging layout:
 
 ```text
 <stageDir>\
-├── scriptobjects.bin                  # [POLICY] required by helpers/Build-CompleteStory.ps1 L92-L94
+├── scriptobjects.bin                  # [POLICY] required by crates/complete-story-cli/src/container.rs
 └── SparkingZERO\Content\...           # [FACT] mount point is ../../../ (game-root relative)
     ├── <Package>.uasset
     └── <Package>.uexp                 # [FACT] .uasset without .uexp is silently skipped
@@ -59,10 +59,10 @@ Required staging layout:
 - `[FACT]` `--version` is required.
 - `[FACT]` `scriptobjects.bin` is **optional upstream**. retoc only parses it, if present,
   "for VNI support and import checking".
-- `[POLICY]` Still required here: `helpers/Build-CompleteStory.ps1` fails without it.
+- `[POLICY]` Still required here: `crates/complete-story-cli` fails without it.
   `[HYPOTHESIS]` A container built without it fails in-game. Untested.
 - `[FACT]` Outputs `<name>.utoc`, `<name>.ucas`, and a sibling `<name>.pak`.
-- `[LOCAL]` `helpers/Build-CompleteStory.ps1` L103-L107 asserts all three exist.
+- `[LOCAL]` `crates/complete-story-cli` asserts all three exist.
 - `[FACT]` Treat any `Skipping ... does not have a split exports file` log line as a failure.
 
 Deployment location, `_P` naming policy, and which files a release must contain belong
@@ -72,7 +72,7 @@ to the `unverum-mod-packager` skill and its reference folder, not to retoc.
 
 ## 3. Verification (`verify`)
 
-Local implementation: `helpers/Build-CompleteStory.ps1` (Stage 6).
+Local implementation: `crates/complete-story-cli/src/container.rs` (Stage 6).
 
 ```powershell
 & $retoc verify (Join-Path $distDir 'CompleteStory_P.utoc')
@@ -98,4 +98,4 @@ Local implementation: `helpers/Build-CompleteStory.ps1` (Stage 6).
 | `.uasset` staged without `.uexp` | `[FACT]` silently skipped | Pre-pack pairing check |
 | Reading `verify` as "game will load it" | `[FACT]` hash check only | In-game test |
 | Writing to the game folder or `~mods/` while extracting | `[POLICY]` | Scratch/staging dirs only |
-| Hardcoding or echoing the AES key | `[LOCAL]` redaction in `Common.ps1` | Env var only |
+| Hardcoding or echoing the AES key | `[LOCAL]` redaction in `crates/complete-story-cli/src/process.rs` | Env var only |

@@ -47,7 +47,7 @@ use clap::{Args, Parser};
 
 #[derive(Args)]
 pub struct BuildArgs {
-    /// Skip asset extraction if staging/legacy is already populated
+    /// Skip asset extraction if build/staging/legacy is already populated
     #[arg(long)]
     pub skip_extract: bool,
 
