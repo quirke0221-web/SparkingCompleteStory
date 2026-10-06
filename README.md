@@ -50,7 +50,7 @@ $env:SPARKING_ZERO_AES_KEY = "0x..."
 cargo run -p complete-story-cli -- build --deploy
 ```
 
-The resulting package is emitted to `dist/CompleteStory-Release.zip` ready for one-click installation via **Unverum**, and automatically staged into your local game folder when `--deploy` is used.
+The resulting package is emitted to `build/dist/CompleteStory-Release.zip` ready for one-click installation via **Unverum**, and automatically staged into your local game folder when `--deploy` is used.
 
 ---
 
@@ -58,7 +58,7 @@ The resulting package is emitted to `dist/CompleteStory-Release.zip` ready for o
 
 Contributors and autonomous AI agents (Codex, Antigravity) must strictly obey the governance invariants in [`AGENTS.md`](AGENTS.md) and [`docs/commit.md`](docs/commit.md):
 1. **Clean Root Invariant:** Only `.gitignore`, `AGENTS.md`, and `README.md` may reside in the root.
-2. **Code File Length Ceiling:** Strictly **<= 300 lines max per code file** (`.ps1`, `.lua`, etc.). Documentation files (`.md`) are exempt to ensure thoroughness.
+2. **Code File Length Ceiling:** Strictly **<= 300 lines max per code file** (`.rs`, `.lua`, etc.). Documentation files (`.md`) are exempt to ensure thoroughness.
 3. **Intent Alignment Gate:** Plain-English conversational alignment before editing code; zero technical jargon traps.
 4. **Zero Slate Reflection:** Runtime hooks must never reflect transient Slate/UMG widgets across frames (ADR 0004).
 
@@ -71,12 +71,12 @@ You don't need coding experience or prompt engineering expertise to build mods w
 ### How to Work With Your Agent:
 * **Give Natural Ideas:** Describe what you want in plain conversational English (e.g., *"I want Goku (Mini) to fight Raditz on Planet Namek instead of Earth"*).
 * **Confirm the Plan:** Your agent will reply with a plain-English summary of what it's building and what you will test. Simply reply *"Go for it"* or *"Looks good"*.
-* **Playtest & Report Back:** Once your agent finishes, it runs `Build -Deploy` and tells you what to verify in Sparking! ZERO. Launch the game, test the battle, and tell your agent what you observed!
-* **Report Bugs in Plain English:** If the game crashes, freezes, or glitches, just tell your agent (e.g., *"It crashed when I defeated Raditz, can you check what happened?"*). Your agent will run `.\helpers\Get-ModLogs.ps1`, read the crash stack directly, and fix the issue.
+* **Playtest & Report Back:** Once your agent finishes, it runs `cargo run -p complete-story-cli -- build --deploy` and tells you what to verify in Sparking! ZERO. Launch the game, test the battle, and tell your agent what you observed!
+* **Report Bugs in Plain English:** If the game crashes, freezes, or glitches, just tell your agent (e.g., *"It crashed when I defeated Raditz, can you check what happened?"*). Your agent will run `cargo run -p complete-story-cli -- logs`, read the crash stack directly, and fix the issue.
 
 ### What the Agent Handles Automatically:
 1. **Zero Tool Hallucination:** Uses audited, version-pinned skills (`retoc`, `UAssetGUI`, `RE-UE4SS`, `Unverum`) grounded in live source receipts.
-2. **One-Step Build & Deploy:** Rebuilds assets and stages containers and Lua scripts directly into your game with `helpers/Build-CompleteStory.ps1 -Deploy`.
-3. **Autonomous Crash Diagnostics:** Diagnoses game crashes and Lua errors directly from `ue4ss.log` and Unreal Engine crash dumps using `helpers/Get-ModLogs.ps1`.
+2. **One-Step Build & Deploy:** Rebuilds assets and stages containers and Lua scripts directly into your game with `cargo run -p complete-story-cli -- build --deploy`.
+3. **Autonomous Crash Diagnostics:** Diagnoses game crashes and Lua errors directly from `ue4ss.log` and Unreal Engine crash dumps using `cargo run -p complete-story-cli -- logs`.
 4. **Save Data Protection:** Guarantees non-destructive coexistence with the 12 vanilla character campaigns and user save data.
 5. **Automated Commit Discipline:** Automatically stages, commits, and pushes clean, conventional Git commits at every milestone, keeping the working tree clean and ready.

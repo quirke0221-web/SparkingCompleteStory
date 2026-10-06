@@ -52,7 +52,7 @@ Whenever an agent or developer works on the codebase, execute this standard 4-st
 
 An agent's turn is considered **DONE** only when all of the following conditions are met:
 - [ ] No unstaged or uncommitted code changes exist in the working tree.
-- [ ] New files strictly reside within their designated taxonomy folders (`CompleteStory/`, `helpers/`, `docs/`, `config/`).
+- [ ] New files strictly reside within their designated taxonomy folders (`CompleteStory/`, `crates/`, `docs/`, `.agents/`).
 - [ ] Commit messages follow [`docs/commit.md`](commit.md).
 - [ ] Changes are pushed to `origin main` so the user and remote teammates have access to the exact current state.
 

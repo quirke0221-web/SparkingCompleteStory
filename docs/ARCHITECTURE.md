@@ -20,14 +20,14 @@ flowchart TB
 
     subgraph CompleteStorySystem["Complete Story Mod Architecture"]
         subgraph Subsystem1["1. Asset Build Pipeline (Offline)"]
-            RetocTool["retoc CLI (UE 5.1 Zen)"]
-            UAssetTool["UAssetGUI / UAssetAPI CLI"]
-            TransformEngine["Transform-CompleteStoryAssets.ps1"]
-            Orchestrator["Build-CompleteStory.ps1"]
+            RetocTool["retoc CLI (UE 5.1 Zen in .tools/)"]
+            UAssetTool["UAssetGUI CLI in .tools/"]
+            TransformEngine["Rust AST Transform (serde_json)"]
+            Orchestrator["complete-story-cli"]
         end
 
         subgraph Subsystem2["2. Packaging & Distribution"]
-            UnverumZip["CompleteStory-v0.3-Unverum.zip"]
+            UnverumZip["CompleteStory-Release.zip"]
             ModOverlay["~mods/ Overlay Container"]
         end
 
@@ -51,7 +51,7 @@ flowchart TB
 
 ### Core Architectural Invariants
 1. **Non-Destructive Coexistence:** Stock campaigns (`0000_40` through `0930_00`) and the player's vanilla save data (`MainGameSaveData`) must remain completely untouched.
-2. **Separation of Concerns:** Pure in-memory asset mutation is decoupled from external tool subprocess execution (ADR 0003).
+2. **Separation of Concerns:** Pure in-memory asset mutation is decoupled from external tool subprocess execution (ADR 0003, ADR 0009).
 3. **Engine Memory Safety:** Playability is resolved via native UFunction hooks on GameThread; transient Slate widget reflection is strictly prohibited (ADR 0004).
 4. **Community Tool Delegation:** Container packing and mod distribution are delegated to verified community tools (`retoc`, `Unverum`) without custom manifests (ADR 0002).
 
@@ -62,7 +62,7 @@ By auditing the wider modding ecosystem ([`sparking-zero-modding-ecosystem.md`](
 ```text
 COMPLETE STORY HYBRID ARCHITECTURE
 ├── 1. OFFLINE DATA SPLICER (Community Archetype C - LostImbecile Pattern)
-│   └── helpers/Build-CompleteStory.ps1 & Transform-CompleteStoryAssets.ps1
+│   └── crates/complete-story-cli (Native Rust AST Transform & Zen Packaging)
 │       └── Domain: 100% responsible for CONTENT (tables, route nodes, event graphs)
 │
 └── 2. IN-ENGINE RUNTIME HOOK (Community Archetype A - AccessForge Pattern)
@@ -86,8 +86,8 @@ The architecture is decomposed into four discrete, single-responsibility subsyst
 
 ```text
 COMPLETE STORY SYSTEM
-├── Subsystem 1: Asset Build Pipeline       (helpers/Build-CompleteStory.ps1)
-├── Subsystem 2: Packaging & Distribution   (dist/CompleteStory-v0.3-Unverum.zip)
+├── Subsystem 1: Asset Build Pipeline       (crates/complete-story-cli)
+├── Subsystem 2: Packaging & Distribution   (build/dist/CompleteStory-Release.zip)
 ├── Subsystem 3: Runtime Interception       (CompleteStory/scripts/main.lua)
 └── Subsystem 4: Save & Coexistence Layer   (Isolated Memory Hooking)
 ```
@@ -99,27 +99,27 @@ The Asset Build Pipeline transforms stock game data assets into a custom UE5.1 I
 
 ```mermaid
 sequenceDiagram
-    participant Orch as Build-CompleteStory.ps1
-    participant Retoc as retoc.exe (0.1.5)
-    participant UAsset as UAssetGUI.exe (1.1.0)
-    participant Trans as Transform-CompleteStoryAssets.ps1
-    participant Staging as staging/ (Ignored)
+    participant Orch as complete-story-cli
+    participant Retoc as retoc.exe (.tools/)
+    participant UAsset as UAssetGUI.exe (.tools/)
+    participant Trans as serde_json AST (src/transform/)
+    participant Staging as build/staging/ (Ignored)
 
     Orch->>Retoc: Stage 1: to-legacy --filter (Extract stock assets)
-    Retoc-->>Staging: Emit legacy .uasset into staging/legacy/
+    Retoc-->>Staging: Emit legacy .uasset into build/staging/legacy/
     Orch->>UAsset: Stage 2: tojson VER_UE5_1 SparkingZERO.usmap
-    UAsset-->>Staging: Emit JSON into staging/json/
-    Orch->>Trans: Stage 3: In-memory asset transformation
-    Trans-->>Staging: Emit modified JSON into staging/modified-json/
+    UAsset-->>Staging: Emit JSON into build/staging/json/
+    Orch->>Trans: Stage 3: In-memory AST transformation
+    Trans-->>Staging: In-memory mutation (zero disk roundtrips)
     Orch->>UAsset: Stage 4: fromjson SparkingZERO.usmap
-    UAsset-->>Staging: Recompile .uasset into staging/container/
+    UAsset-->>Staging: Recompile .uasset into build/staging/container/
     Orch->>Retoc: Stage 5: to-zen --version UE5_1
-    Retoc-->>Orch: Emit dist/CompleteStory_P.{pak,utoc,ucas}
+    Retoc-->>Staging: Emit build/staging/zen/CompleteStory_P.{pak,utoc,ucas}
     Orch->>Retoc: Stage 6: verify container integrity
 ```
 
-* **Contract & Staging Isolation:** All intermediate artifacts reside exclusively within `staging/` and `dist/`, which are excluded from Git via `.gitignore`.
-* **Pure Domain Transformation (`Transform-CompleteStoryAssets.ps1`):**
+* **Contract & Staging Isolation:** All intermediate artifacts reside exclusively within `build/staging/` and `build/dist/`, which are excluded from Git via `.gitignore`.
+* **Pure Domain Transformation (`crates/complete-story-cli/src/transform/`):**
   * Slices route key `0000_00` into `DragonAdventureIFData.PtrRecords` (preserving `DefaultOpenCharacter = 0000_40`).
   * Slices route key `0000_00` into `DragonAdventureIFChartData` pointing to `ChartData0000_00`.
   * Clones Goku's data into `DAIF_CharaData_CompleteStory` with culture-invariant name `"Complete Story"` and Raditz start event pointers (`Event_00_0_00_00`, `EventBlock_0000_00`, `DIF_Event_0000_00`).
@@ -128,7 +128,7 @@ sequenceDiagram
 
 ### 2.2 Subsystem 2: Packaging & Distribution
 * **Container Standards:** Built using `retoc to-zen --version UE5_1`. Produces standard nine-character indexed IoStore containers: `CompleteStory_P.pak`, `CompleteStory_P.utoc`, `CompleteStory_P.ucas`.
-* **Distribution Archive:** Generates `dist/CompleteStory-v0.3-Unverum.zip` containing strictly the container files at the archive root.
+* **Distribution Archive:** Generates `build/dist/CompleteStory-Release.zip` containing strictly the container files at the archive root.
 * **Mod Manager Integration:** Installed via **Unverum**, which automatically handles mod mounting, priority renaming (`~mods/`), and signature bypass loading (`dsound.dll` + `.asi`). Mod release zips **never bundle third-party bypass DLLs** (ADR 0002).
 
 ---
@@ -161,10 +161,10 @@ sequenceDiagram
 | Layer | Component | Authoritative Technology | SSOT Governance Reference |
 | :--- | :--- | :--- | :--- |
 | **Requirements** | Master Mod Scope & Vision | Markdown (`docs/PRD.md`) | `docs/PRD.md` |
-| **Asset Extract & Pack** | IoStore Container Packaging | retoc v0.1.5 CLI (Rust) | `docs/dependencies/retoc/` |
-| **Asset Serialization** | UAsset Binary <-> JSON | UAssetGUI v1.1.0 CLI (C#) | `docs/dependencies/uassetgui/` |
-| **Asset Domain Logic** | JSON AST Transformation | PowerShell 7 / Windows PowerShell | `helpers/Transform-CompleteStoryAssets.ps1` |
-| **Pipeline Automation** | Master Build Orchestration | PowerShell (`helpers/Build-CompleteStory.ps1`) | `docs/ADRs/0003` |
+| **Asset Extract & Pack** | IoStore Container Packaging | retoc v0.1.5 CLI (Rust in `.tools/`) | `docs/dependencies/retoc/` |
+| **Asset Serialization** | UAsset Binary <-> JSON | UAssetGUI v1.1.0 CLI (C# in `.tools/`) | `docs/dependencies/uassetgui/` |
+| **Asset Domain Logic** | JSON AST Transformation | Rust (`serde_json` 1.0.151) | `crates/complete-story-cli/src/transform/` & `docs/ADRs/0009` |
+| **Pipeline Automation** | Master Build Orchestration | Rust (`clap` 4.6.7, `anyhow` 1.0.104) | `crates/complete-story-cli` & `docs/ADRs/0009` |
 | **Runtime Interception** | Native UFunction Hooking | RE-UE4SS v3.0.1 Beta (Lua 5.4) | `docs/dependencies/ue4ss/` & `docs/ADRs/0004` |
 | **Mod Management** | Distribution & Load Ordering | Unverum Mod Manager | `docs/dependencies/unverum/` & `docs/ADRs/0002` |
 | **Engine Target** | Host Executable Environment | Unreal Engine 5.1.1 (Zen / IoStore) | Steam Build `24953175` |
@@ -173,6 +173,6 @@ sequenceDiagram
 
 ## 4. Verification & Quality Attributes
 
-1. **Deterministic Buildability:** Running `.\helpers\Build-CompleteStory.ps1` from a clean clone with valid prerequisites produces a bit-for-bit verified container passing `retoc verify`.
+1. **Deterministic Buildability:** Running `cargo run -p complete-story-cli -- build` from a clean clone with valid prerequisites produces a bit-for-bit verified container passing `retoc verify`.
 2. **Crash Immunity:** Zero dereferencing of transient Slate widget memory; zero native access violations (`0xC0000005`).
-3. **Maintainability Ceiling:** Every implementation script (`.ps1`, `.lua`) strictly adheres to the **<= 300 lines ceiling** (`AGENTS.md` §0.4). Architectural, research, and specification documents are exempt to ensure thorough and complete context.
+3. **Maintainability Ceiling:** Every implementation code file (`.rs`, `.lua`) strictly adheres to the **<= 300 lines ceiling** (`AGENTS.md` §0.4). Architectural, research, and specification documents are exempt to ensure thorough and complete context.

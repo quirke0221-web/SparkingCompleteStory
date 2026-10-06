@@ -64,11 +64,9 @@ To ensure consistency across human engineers and AI agents (Codex, Antigravity),
 * `(prd)`: Product requirements and scope specifications (`docs/PRD.md`).
 * `(adr)`: Architectural Decision Records (`docs/ADRs/*`).
 * `(research)`: Empirical ecosystem and legacy codebase investigations (`docs/research/*`).
-* `(pipeline)`: Master build orchestrator and packaging scripts (`helpers/Build-*.ps1`).
-* `(assets)`: Asset transformation and JSON manipulation logic (`helpers/Transform-*.ps1`).
+* `(pipeline)`: Master build orchestrator and packaging toolchain in Rust (`crates/complete-story-cli/*`).
+* `(assets)`: Asset transformation and JSON AST manipulation logic (`crates/complete-story-cli/src/transform/*`).
 * `(runtime)`: RE-UE4SS Lua scripts and game engine hooks (`CompleteStory/scripts/*`).
-* `(helpers)`: Development, staging, and deployment helper utilities (`helpers/*`).
-* `(config)`: Project-level settings and path manifests (`config/*`).
 
 ---
 
