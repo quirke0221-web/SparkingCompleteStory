@@ -40,7 +40,7 @@ Every tool action in the pipeline is strictly delegated to its dedicated Tier-2 
 1. **Vanilla Save Data Protection:** Mod modifications must **never** corrupt, invalidate, or overwrite the player's stock save data (`MainGameSaveData`).
 2. **Stock Campaign Isolation:** All 12 stock character Episode Battle campaigns (Goku, Vegeta, Gohan, Piccolo, Future Trunks, Frieza, Goku Black, Jiren, etc.) must remain 100% playable and untampered.
 3. **Vanilla Asset Reuse:** 100% of audio, cutscenes, and character assets must reuse stock assets from the base game.
-4. **Clean Staging Invariant:** Never modify files directly inside the game's installation or `~mods/` directory. All work occurs in `staging/` or `dist/`.
+4. **Clean Staging Invariant:** Never modify files directly inside the game's installation or `~mods/` directory. All work occurs in `build/staging/` or `build/dist/`.
 
 ---
 
@@ -51,37 +51,37 @@ The mod build and packaging lifecycle is coordinated end-to-end by [`crates/comp
 ### Stage 1: Targeted Extraction
 - **Tool:** [`retoc-iostore-packer`](../retoc-iostore-packer/SKILL.md) (`retoc to-legacy --version UE5_1`)
 - **Automated by:** `complete-story-cli build` (Stage 1)
-- Extracts only the targeted stock asset packages (`DragonAdventureIFData`, `DragonAdventureIFChartData`, character data) and `scriptobjects.bin` using substring `--filter` flags into `staging/legacy/`.
+- Extracts only the targeted stock asset packages (`DragonAdventureIFData`, `DragonAdventureIFChartData`, character data) and `scriptobjects.bin` using substring `--filter` flags into `build/staging/legacy/`.
 
 ### Stage 2: JSON Deserialization
 - **Tool:** [`uassetgui-asset-serialization`](../uassetgui-asset-serialization/SKILL.md) (`UAssetGUI tojson`)
-- **Automated by:** `helpers/Build-CompleteStory.ps1` Stage 2
-- Converts extracted binary `.uasset` files into indented JSON using `VER_UE5_1` and `SparkingZERO.usmap` into `staging/json/`.
+- **Automated by:** `complete-story-cli build` (Stage 2)
+- Converts extracted binary `.uasset` files into indented JSON using `VER_UE5_1` and `SparkingZERO.usmap` into `build/staging/json/`.
 
 ### Stage 3: Pure Domain Transformation
-- **Script:** [`helpers/Transform-CompleteStoryAssets.ps1`](file:///c:/echor/projects/SparkingCompleteStory/helpers/Transform-CompleteStoryAssets.ps1)
-- **Automated by:** `helpers/Build-CompleteStory.ps1` Stage 3
-- Injects campaign entries into the JSON structure (pure in-memory JSON mutation, zero subprocess calls per ADR 0003):
+- **Tool:** [`serde-json-ast`](../serde-json-ast/SKILL.md) & [`rust-pipeline-builder`](../rust-pipeline-builder/SKILL.md) (`crates/complete-story-cli/src/transform/`)
+- **Automated by:** `complete-story-cli build` (Stage 3)
+- Injects campaign entries into the JSON structure (strongly typed in-memory `serde_json::Value` AST mutation, zero subprocess calls per ADR 0003 and ADR 0009):
   - Appends `0000_00` to `DragonAdventureIFData.PtrRecords`.
   - Maps `0000_00` in `DragonAdventureIFChartData.PtrRecords`.
   - Clones Goku's asset into `DAIF_CharaData_CompleteStory` with culture-invariant title `"Complete Story"`.
 
 ### Stage 4: Binary Asset Recompilation
 - **Tool:** [`uassetgui-asset-serialization`](../uassetgui-asset-serialization/SKILL.md) (`UAssetGUI fromjson`)
-- **Automated by:** `helpers/Build-CompleteStory.ps1` Stage 4
-- Recompiles modified JSON into `.uasset` + companion `.uexp` binaries into `staging/container/`. Copies `scriptobjects.bin`.
+- **Automated by:** `complete-story-cli build` (Stage 4)
+- Recompiles modified JSON into `.uasset` + companion `.uexp` binaries into `build/staging/container/`. Copies `scriptobjects.bin`.
 
 ### Stage 5: Zen IoStore Container Packaging
 - **Tool:** [`retoc-iostore-packer`](../retoc-iostore-packer/SKILL.md) (`retoc to-zen --version UE5_1`)
-- **Automated by:** `helpers/Build-CompleteStory.ps1` Stage 5
-- Compiles `staging/container/` into `dist/CompleteStory_P.{pak,utoc,ucas}`.
+- **Automated by:** `complete-story-cli build` (Stage 5)
+- Compiles `build/staging/container/` into `build/staging/zen/CompleteStory_P.{pak,utoc,ucas}`.
 
 ### Stage 6: Verification & Release Packaging
 - **Tool:** [`retoc-iostore-packer`](../retoc-iostore-packer/SKILL.md) (`retoc verify`) & [`zip-archive-packager`](../zip-archive-packager/SKILL.md)
 - **Automated by:** `complete-story-cli build` (Stage 6)
 - Runs `retoc verify` on the compiled `.utoc`.
 - Verifies non-zero file sizes across `.pak`, `.utoc`, and `.ucas`.
-- Packages the Unverum-ready release archive `dist/CompleteStory-Release.zip` ensuring no third-party bypass DLLs are bundled (ADR 0002).
+- Packages the Unverum-ready release archive `build/dist/CompleteStory-Release.zip` ensuring no third-party bypass DLLs are bundled (ADR 0002).
 
 ---
 
@@ -89,20 +89,20 @@ The mod build and packaging lifecycle is coordinated end-to-end by [`crates/comp
 
 - [ ] Native CLI build toolchain verified (`cargo check -p complete-story-cli`).
 - [ ] Dependencies verified in matrix: `retoc`, `UAssetGUI`, `RE-UE4SS`, `Unverum`.
-- [ ] `SparkingZERO.usmap` is in place.
+- [ ] `SparkingZERO.usmap` is in place inside `.tools/Data/Mappings/`.
 - [ ] Target AES key is set in environment (`$env:SPARKING_ZERO_AES_KEY`).
-- [ ] Staging and output directories are cleanly isolated outside `~mods/`.
+- [ ] Staging and output directories are cleanly isolated in `build/` outside `~mods/`.
 
 ---
 
 ## 5. Pipeline Post-Flight Checklist & Diagnostics
 
-- [ ] All 3 container files (`.pak`, `.utoc`, `.ucas`) generated in `dist/`.
+- [ ] All 3 container files (`.pak`, `.utoc`, `.ucas`) generated in `build/staging/zen/` and `build/dist/`.
 - [ ] `retoc verify` outputs `verified`.
 - [ ] Staging logs confirm 0 skipped assets (every `.uasset` had its matching `.uexp`).
-- [ ] Staged to local game for testing via `helpers/Build-CompleteStory.ps1 -Deploy`.
+- [ ] Staged to local game for testing via `cargo run -p complete-story-cli -- build --deploy`.
 - [ ] In-game smoke test: Game boots, stock 12 campaigns remain accessible, and custom campaign mounts without crashes.
-- [ ] Diagnostic Triage: If an in-game crash, freeze, or exception occurs during testing, run `helpers/Get-ModLogs.ps1` to inspect `ue4ss.log` and Unreal crash dumps directly.
+- [ ] Diagnostic Triage: If an in-game crash, freeze, or exception occurs during testing, run `cargo run -p complete-story-cli -- logs` to stream `ue4ss.log` directly.
 
 ---
 
@@ -111,7 +111,7 @@ The mod build and packaging lifecycle is coordinated end-to-end by [`crates/comp
 | Forbidden | Why (receipt) | Do instead |
 |---|---|---|
 | Executing pipeline steps out of order | Downstream tools depend on upstream artifacts | Follow Stages 1 -> 6 linearly |
-| Building directly into the game's `~mods/` | Unverum deletes `~mods/` on build click | Build to `dist/`, then deploy |
+| Building directly into the game's `~mods/` | Unverum deletes `~mods/` on build click | Build to `build/dist/`, then deploy |
 | Modifying stock save data files directly | Violates `AGENTS.md` §4.3 and PRD Principle 4 | Isolate mod campaign data |
 | Bundling third-party bypass DLLs in release | Violates `AGENTS.md` §4.1; Unverum manages bypass | Distribute only `.pak/.utoc/.ucas` |
 | Calling tools without checking their Tier-2 skill | Prevents hallucinated flags and argument drift | Always consult Tier-2 skill first |

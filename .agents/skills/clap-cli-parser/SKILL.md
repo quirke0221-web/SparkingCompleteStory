@@ -72,7 +72,7 @@ pub enum Commands {
 
 #[derive(Args, Debug)]
 pub struct BuildArgs {
-    /// Skip Stage 1 extraction if staging/legacy is already populated
+    /// Skip Stage 1 extraction if build/staging/legacy is already populated
     #[arg(long)]
     pub skip_extract: bool,
 

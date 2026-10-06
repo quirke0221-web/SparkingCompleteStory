@@ -61,7 +61,7 @@ Every fact below cites primary source receipts. `[SETUP:Lx]` = line `x` of `Unve
 
 - [ ] Local environment check: Verify `<GameRoot>\SparkingZERO\Binaries\Win64\dsound.dll` exists.
 - [ ] Local environment check: Verify `<GameRoot>\SparkingZERO\Binaries\Win64\plugins\DBSparkingZeroUTOCBypass.asi` exists.
-- [ ] Release audit: Verify that `dist/` and release archives contain **only** `.pak`, `.utoc`, and `.ucas` containers.
+- [ ] Release audit: Verify that `build/dist/` and release archives contain **only** `.pak`, `.utoc`, and `.ucas` containers.
 
 ---
 

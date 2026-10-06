@@ -17,7 +17,7 @@ Every rule below cites its empirical receipt. If a method or struct is not cited
 ## 1. Scope Boundaries
 
 **Use this skill for:**
-* Compressing mod assets into standalone `.zip` distribution bundles in `dist/`.
+* Compressing mod assets into standalone `.zip` distribution bundles in `build/dist/`.
 * Setting entry compression methods (`Deflated`).
 * Constructing forward-slash archive paths compatible with Windows and Linux zip extractors.
 

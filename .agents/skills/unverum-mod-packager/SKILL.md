@@ -60,7 +60,7 @@ Every rule below cites its source receipt. `[SETUP:Lx]` = line `x` of `Unverum/S
   Directory.CreateDirectory(path);
   ```
   It also deletes `SparkingZERO\Mods` (SZModLib) and UE4SS binaries in `Win64` (`[BUILD:L27-L32, L51-L65]`).
-- **Rule:** **NEVER** use `~mods/` as a working directory or build output target. All build pipelines must output to an isolated staging directory (e.g. `dist/` or `staging/`).
+- **Rule:** **NEVER** use `~mods/` as a working directory or build output target. All build pipelines must output to an isolated staging directory (e.g. `build/dist/` or `build/staging/`).
 
 ---
 
@@ -76,7 +76,7 @@ Every rule below cites its source receipt. `[SETUP:Lx]` = line `x` of `Unverum/S
 
 - [ ] Container trio verification: All three files exist with matching basenames (`<name>.pak`, `<name>.utoc`, `<name>.ucas`).
 - [ ] Container verification: `retoc verify <name>.utoc` reports `verified`.
-- [ ] Staging isolation: Working files are in `dist/` or `staging/`, **never** directly inside the game's `~mods/` folder.
+- [ ] Staging isolation: Working files are in `build/dist/` or `build/staging/`, **never** directly inside the game's `~mods/` folder.
 - [ ] Archive audit: Ensure no third-party binaries (`dsound.dll`, `ue4ss.dll`, `.asi`) are present in the package.
 
 ---

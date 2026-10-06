@@ -50,7 +50,7 @@ cargo run -p complete-story-cli -- build --deploy
 ```bash
 cargo run -p complete-story-cli -- build --skip-extract --deploy
 ```
-* **Receipt:** Bypasses Stage 1 extraction when `staging/legacy/` assets are already staged, saving ~15 seconds on rebuilds.
+* **Receipt:** Bypasses Stage 1 extraction when `build/staging/legacy/` assets are already staged, saving ~15 seconds on rebuilds.
 
 ### 2.3 Live Mod Log Streaming
 ```bash
