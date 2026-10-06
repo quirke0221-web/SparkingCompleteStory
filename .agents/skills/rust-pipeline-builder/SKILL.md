@@ -27,6 +27,10 @@ Every rule below cites its empirical receipt. If an API or CLI command is not ci
 **Do NOT use this skill for (hand off instead):**
 | Task | Owner skill |
 |---|---|
+| CLI argument parsing & subcommands | `clap-cli-parser` |
+| JSON AST parsing & mutation | `serde-json-ast` |
+| Error propagation & subprocess diagnostics | `anyhow-error-handling` |
+| Distributable zip archive packaging | `zip-archive-packager` |
 | In-game Lua scripting and GameThread reflection | `ue4ss-runtime-scripting` |
 | Low-level IoStore container byte format rules | `retoc-iostore-packer` |
 | Low-level `.usmap` schema mapping definitions | `uassetgui-asset-serialization` |
