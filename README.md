@@ -40,17 +40,17 @@ All project documentation follows the strict governance lifecycle defined in [`A
 
 ## 2. Quickstart: Building the Mod
 
-Complete Story uses a single, parameterized orchestrator that coordinates `retoc` and `UAssetGUI` across 6 automated stages:
+Complete Story uses a single, native CLI orchestrator (`complete-story-cli`) that coordinates `retoc` and `UAssetGUI` across 6 automated stages:
 
-```powershell
-# 1. Ensure local config is set in config/project.local.psd1 and AES key is in environment
+```bash
+# 1. Ensure your AES encryption key is set in your environment
 $env:SPARKING_ZERO_AES_KEY = "0x..."
 
 # 2. Build the complete IoStore container and deploy directly to game folder:
-.\helpers\Build-CompleteStory.ps1 -Deploy
+cargo run -p complete-story-cli -- build --deploy
 ```
 
-The resulting package is emitted to `dist/CompleteStory-v0.3-Unverum.zip` ready for one-click installation via **Unverum**, and automatically staged into your local game folder when `-Deploy` is used.
+The resulting package is emitted to `dist/CompleteStory-Release.zip` ready for one-click installation via **Unverum**, and automatically staged into your local game folder when `--deploy` is used.
 
 ---
 
