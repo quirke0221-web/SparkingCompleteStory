@@ -62,7 +62,8 @@ foreach ($rel in $stockAssets) {
     $source = Join-Path $dirs.LegacyStaging $rel
     Assert-File $source "Extracted stock asset '$rel'"
     $dest = Join-Path $dirs.JsonStaging (([IO.Path]::GetFileNameWithoutExtension($source)) + '.json')
-    Invoke-Checked $config.UAssetGUIPath @('tojson', $source, $dest, 'VER_UE5_1', $config.MappingName)
+    Invoke-Checked $config.UAssetGUIPath @('--portable', 'tojson', $source, $dest, 'VER_UE5_1', $config.MappingName)
+    Wait-FileReady $dest "serialized JSON for '$rel'"
 }
 
 # --- Stage 3: Pure Domain JSON Transformation ---
@@ -88,7 +89,9 @@ foreach ($item in $outputs) {
     $dest = Join-Path $dirs.ContainerStaging $item.Relative
     Assert-File $src "Modified JSON '$($item.Json)'"
     $null = New-Item -ItemType Directory -Force -Path (Split-Path -Parent $dest)
-    Invoke-Checked $config.UAssetGUIPath @('fromjson', $src, $dest, $config.MappingName)
+    Invoke-Checked $config.UAssetGUIPath @('--portable', 'fromjson', $src, $dest, $config.MappingName)
+    Wait-FileReady $dest "compiled asset '$($item.Relative)'"
+    Wait-FileReady ([IO.Path]::ChangeExtension($dest, '.uexp')) "compiled exports for '$($item.Relative)'"
 }
 $scriptObjects = Join-Path $dirs.LegacyStaging 'scriptobjects.bin'
 Assert-File $scriptObjects 'scriptobjects.bin from legacy extraction'

@@ -46,9 +46,36 @@ function Ensure-CleanDirectory([string]$Path) {
 
 function Invoke-Checked {
     param([string]$FilePath, [string[]]$Arguments)
+    $global:LASTEXITCODE = 0
     & $FilePath @Arguments
     if ($LASTEXITCODE -ne 0) {
         # Never echo arguments here: retoc calls can include the owner's AES key.
         throw "Command failed with exit code ${LASTEXITCODE}: $FilePath (arguments redacted)"
     }
+}
+
+function Wait-FileReady {
+    param(
+        [string]$Path,
+        [string]$Description,
+        [int]$TimeoutSeconds = 30
+    )
+
+    $deadline = [DateTime]::UtcNow.AddSeconds($TimeoutSeconds)
+    $stableLength = -1L
+    $stableChecks = 0
+    while ([DateTime]::UtcNow -lt $deadline) {
+        if (Test-Path -LiteralPath $Path -PathType Leaf) {
+            $length = (Get-Item -LiteralPath $Path).Length
+            if ($length -gt 0 -and $length -eq $stableLength) {
+                $stableChecks++
+                if ($stableChecks -ge 3) { return }
+            } else {
+                $stableLength = $length
+                $stableChecks = 1
+            }
+        }
+        Start-Sleep -Milliseconds 100
+    }
+    throw "Timed out waiting for $Description`: $Path"
 }
