@@ -34,6 +34,7 @@ All project documentation follows the strict governance lifecycle defined in [`A
     * [`sparking-zero-modding-ecosystem.md`](docs/research/case-studies/sparking-zero-modding-ecosystem.md): Engine architecture and primary toolchain map.
     * [`accessforge.md`](docs/research/case-studies/accessforge.md): Structural parity, `helpers/` isolation, and safe GameThread hooking.
     * [`wistfulhopes.md`](docs/research/case-studies/wistfulhopes.md): Zen IoStore container packaging, `_P` patch priority, and clean distribution.
+    * [`unverum.md`](docs/research/case-studies/unverum.md): Mod manager distribution, priority staging (`_9_P`), and clean deployment lifecycle.
 
 ---
 

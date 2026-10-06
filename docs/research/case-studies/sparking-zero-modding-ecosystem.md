@@ -55,10 +55,42 @@ The following dependencies were verified via live repository inspection and loca
 
 ## 3. Dedicated Community Case Studies
 
-The architectural patterns and safeguards employed in this project are derived directly from two verified community case studies:
+The architectural patterns and safeguards employed in this project are derived directly from three verified community case studies:
 
 * **[AccessForge (`SparkingZeroAccess`)](accessforge.md):**  
   Case study on hybrid RE-UE4SS mod architecture, 1:1 root folder parity (`SparkingZeroAccess/` -> `Win64\Mods\`), isolating build tooling to `helpers/` (ADR 0008), and safe GameThread native hooking without Slate widget reflection (ADR 0004).
 
 * **[WistfulHopes (`SparkingZERO_ModProject`)](wistfulhopes.md):**  
-  Case study on UE 5.1.1 Zen/IoStore container compilation via `retoc`, non-destructive in-memory `_P` patch priority mounting, and clean distribution packaging without bundling anti-cheat bypass binaries (ADR 0002).
+  Case study on UE 5.1.1 Zen/IoStore container compilation via `retoc`, immutable overlay filesystem (`_P` patch priority mounting), and clean distribution packaging without bundling anti-cheat bypass binaries (ADR 0002).
+
+* **[Unverum Mod Manager](unverum.md):**  
+  Case study on mod manager distribution architecture, priority staging (`~mods\a\`), automated `_9_P` renaming, ephemeral build wipe lifecycle, and clean environment bypass delegation (ADR 0002).
+
+---
+
+## 4. Synthesis: "The Clean Architecture of Game Modding"
+
+Software engineers entering game modding often struggle because games lack traditional web frameworks or RESTful backends. However, the architectural principles that govern robust software engineering translate directly into modding when mapped to engine domains:
+
+### Hexagonal Architecture (Ports & Adapters) in Game Modding
+
+In backend systems (e.g. Rust/Go/Java), Hexagonal Architecture isolates business logic at the core, interacting with the outside world strictly through ports and adapters:
+
+| Hexagonal Tier | Web / Backend Architecture | Game Modding Domain | Complete Story Implementation |
+|---|---|---|---|
+| **Core Domain** | Business logic & entity models | Campaign progression rules, episode data schema, fight parameters | Pure asset transformation (`Transform-CompleteStoryAssets.ps1`) |
+| **Driving Ports (Inbound)** | REST controllers, gRPC handlers, CLI commands | Build orchestrator, test harnesses, developer toolchain | `helpers/Build-CompleteStory.ps1`, PowerShell test cmdlets |
+| **Driven Ports (Outbound)** | SQL databases, external APIs, message queues | Game engine memory, IoStore disk containers, reflection tables | `retoc` (IoStore container driver), `UAssetGUI` (serialization driver) |
+| **Runtime Port** | Live daemon / socket server | Native engine execution thread | `CompleteStory/scripts/main.lua` via RE-UE4SS C++ hooks |
+
+### Bulletproof React Principles in Game Modding
+
+In modern frontend systems, Bulletproof React enforces modularity, unidirectional data flow, and immutability:
+
+1. **Feature-First Decomposition:**  
+   Instead of dumping all scripts into a monolithic file, runtime logic is organized into isolated, domain-specific modules with explicit interfaces (`require("battle")`, `require("speech")`), exactly as demonstrated by AccessForge.
+2. **Immutable Overlays vs. Direct State Mutation:**  
+   In React, state is never mutated in place; a new state representation is rendered. Similarly, Unreal Engine 5 Zen IoStore operates as an immutable layered filesystem (akin to Docker container overlays). Rather than patching vanilla game binaries on disk, modded containers mount as non-destructive overlays (`CompleteStory_9_P`) in memory, ensuring vanilla files remain pristine.
+3. **Defensive Error Boundaries:**  
+   Uncaught errors in React unmount the component tree unless caught by an Error Boundary. In Lua modding, unhandled C++ exceptions instantly crash the host game process (`0xC0000005`). Implementing circuit-breaker guards (`pcall`, `TryCall`) ensures transient failures fail gracefully without crashing the engine.
+
