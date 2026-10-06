@@ -59,8 +59,7 @@ impl Config {
             .join("SparkingZERO")
             .join("Content")
             .join("Paks")
-            .join("~mods")
-            .join("CompleteStory");
+            .join("~mods");
 
         let target_ue4ss_mod_dir = steam_game_root
             .join("SparkingZERO")

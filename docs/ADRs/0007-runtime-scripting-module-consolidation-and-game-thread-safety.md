@@ -14,7 +14,7 @@ During early prototype iterations (v0.4 through v0.7), the runtime scripting lay
 2. **Zero Slate/UMG Scraping (ADR 0004 Enforcement):** Strictly ban `FindAllOf("TextBlock")`, UI text normalization, and carousel panel reflection. The runtime script is a clean, GameThread-safe hook on `/Script/SS.SSDragonAdventureIFCSManager:IsPlayable`.
 3. **Safe Native Inspection:** Inspect native C++ manager properties on `self` safely wrapped in `pcall` without touching the widget hierarchy.
 4. **Non-Destructive Coexistence Invariant:** Override `ReturnValue` to `true` strictly when the active route key resolves to `0000_00` (Complete Story). Return `nil` for all 12 stock character campaigns so vanilla save validation runs untouched.
-5. **Dual Development Deployment:** Enhance `Deploy-DevelopmentBuild.ps1` so `-Install` stages both the IoStore container (`Content/Paks/~mods/CompleteStory`) and the RE-UE4SS runtime mod (`Binaries/Win64/Mods/CompleteStory`) with rollback snapshots.
+5. **Dual Development Deployment:** Enhance `Deploy-DevelopmentBuild.ps1` so `-Install` stages both the IoStore container (`Content/Paks/~mods`) and the RE-UE4SS runtime mod (`Binaries/Win64/Mods/CompleteStory`) with rollback snapshots.
 
 ## Consequences
 * **Positive:** Eliminates ~760 lines of duplicate, obsolete, and crash-prone code across 3 legacy implementations.

@@ -8,7 +8,7 @@ pub fn deploy_to_game(config: &Config, containers: &ContainerArtifacts) -> Resul
         bail!("Steam game directory not found at {:?}", config.steam_game_root);
     }
 
-    // 1. Deploy IoStore Containers to Content/Paks/~mods/CompleteStory/
+    // 1. Deploy IoStore Containers to Content/Paks/~mods/
     std::fs::create_dir_all(&config.target_paks_mod_dir)
         .with_context(|| format!("Failed to create ~mods directory at {:?}", config.target_paks_mod_dir))?;
 

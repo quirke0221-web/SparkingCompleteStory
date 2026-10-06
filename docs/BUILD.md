@@ -72,7 +72,7 @@ cargo run -p complete-story-cli -- pack
 ```
 
 ### Deploy to Game
-Copies the built container files to `Content/Paks/~mods/CompleteStory/` and runtime Lua mod to `Binaries/Win64/Mods/CompleteStory/`:
+Copies the built container files to `Content/Paks/~mods/` and runtime Lua mod to `Binaries/Win64/Mods/CompleteStory/`:
 ```bash
 cargo run -p complete-story-cli -- deploy
 ```
