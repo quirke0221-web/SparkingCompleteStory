@@ -26,23 +26,43 @@ The `AccessForge/SparkingZeroAccess` repository enforces a strict boundary betwe
 
 ```text
 SparkingZeroAccess/
-├── SparkingZeroAccess/            <-- Authoritative In-Game Mod Root (Deployed to game)
-│   ├── enabled.txt                <-- RE-UE4SS mod activation flag
-│   └── Scripts/                   <-- In-Game Lua Modules (Executed by UE4SS Lua 5.4)
-│       ├── main.lua               <-- Master orchestrator: lifecycle, keybinds, hook init
-│       ├── helpers.lua            <-- Defensive circuit-breaker wrappers (TryCall, pcall)
-│       ├── speech.lua             <-- Screen-reader audio dispatch (NVDA/JAWS/SAPI)
-│       ├── widget_reader.lua      <-- Text reading, widget matching, label resolution
-│       ├── poll_trackers.lua      <-- State polling loops (dialogs, help windows, rooms)
-│       ├── icon_parser.lua        <-- Rich text icon markup parser (converts icons to words)
-│       ├── battle.lua             <-- Battle HUD monitor (HP, Ki, Sparking gauge deltas)
-│       └── chara_names.lua        <-- Character texture-ID to display-name lookup table
+├── .github/workflows/
+│   └── release.yml                <-- GitHub Actions automated release packaging
+├── docs/                          <-- Architecture & API documentation
+│   ├── ACCESSIBILITY_MODDING_GUIDE.md
+│   ├── known-issues.md
+│   ├── state-management-guide.md
+│   └── ue4ss-lua-api-reference.md
+├── helpers/                       <-- Offline maintenance automation (Python)
+│   ├── README.md
+│   ├── Update-CharaNames.py       <-- Extracts character IDs from game dumps
+│   └── build_dp_table.py          <-- Generates character DP cost tables
+├── speech_bridge/                 <-- Native C audio bridge source
+│   ├── README.md
+│   └── speech_bridge.c            <-- C source compiled to native DLL
+├── deps/                          <-- Local dependency archive
+│   ├── README.md
+│   └── utoc-bypass.zip
 │
-├── scripts/                       <-- Maintenance Automation (Executed on Windows outside game)
-│   └── Update-CharaNames.py       <-- Python script to extract DLC texture IDs from new game updates
-│
-├── LICENSE                        <-- MIT License
-└── README.md                      <-- Installation guide, keybinds, and mod features
+└── SparkingZeroAccess/            <-- Authoritative In-Game Mod Root (Deployed to Win64\Mods\)
+    ├── main.lua                   <-- Master orchestrator: lifecycle, keybinds, hook init
+    ├── helpers.lua                <-- Defensive circuit-breaker wrappers (TryCall, pcall)
+    ├── battle.lua                 <-- Battle HUD monitor (HP, Ki, Sparking gauge deltas)
+    ├── episode_battle.lua         <-- Episode Battle route & dialog reader
+    ├── chara_names.lua            <-- Character texture-ID to display-name lookup table
+    ├── chara_roster.lua           <-- Roster grid navigation & selection reader
+    ├── debug_tools.lua            <-- In-game debug logger & state inspector
+    ├── icon_parser.lua            <-- Rich text icon markup parser
+    ├── poll_trackers.lua          <-- State polling loops (dialogs, help windows, rooms)
+    ├── shop.lua                   <-- In-game store & item description reader
+    ├── skill_list.lua             <-- Move list & ability description reader
+    ├── speech.lua                 <-- Screen-reader audio dispatch
+    ├── team_overview.lua          <-- Team battle HUD inspection
+    ├── widget_reader.lua          <-- Text reading, widget matching, label resolution
+    ├── speech_bridge.dll          <-- Custom compiled audio bridge binary
+    ├── UniversalSpeech.dll        <-- Multi-engine speech library
+    ├── ZDSRAPI.dll                <-- Chinese screen reader driver
+    └── nvdaControllerClient.dll   <-- NVDA screen reader driver
 ```
 
 ---

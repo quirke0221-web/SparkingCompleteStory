@@ -31,10 +31,10 @@ All project documentation follows the strict governance lifecycle defined in [`A
   * `asset-data-dictionary.md`: Reverse-engineered `PtrRecords` struct offsets, event pointers, and save structures.
   * `legacy-iteration-history.md`: Complete v0.1–v0.7 failure post-mortems and "Do Not Repeat" matrix.
   * **[Case Studies Vault](docs/research/case-studies/):**
-    * [`sparking-zero-modding-ecosystem.md`](docs/research/case-studies/sparking-zero-modding-ecosystem.md): Engine architecture and primary toolchain map.
-    * [`accessforge.md`](docs/research/case-studies/accessforge.md): Structural parity, `helpers/` isolation, and safe GameThread hooking.
-    * [`wistfulhopes.md`](docs/research/case-studies/wistfulhopes.md): Zen IoStore container packaging, `_P` patch priority, and clean distribution.
-    * [`unverum.md`](docs/research/case-studies/unverum.md): Mod manager distribution, priority staging (`_9_P`), and clean deployment lifecycle.
+    * [`sparking-zero-modding-ecosystem.md`](docs/research/case-studies/sparking-zero-modding-ecosystem.md): Engine architecture and three modding archetypes.
+    * [`accessforge.md`](docs/research/case-studies/accessforge.md): In-engine runtime mod architecture, flat module layout, and safe GameThread hooking.
+    * [`wistfulhopes.md`](docs/research/case-studies/wistfulhopes.md): Unreal Engine 5 SDK project (`.uproject`) and editor cooking pipeline.
+    * [`audio-modding-tool.md`](docs/research/case-studies/audio-modding-tool.md): Headless binary extraction, surgical byte splicing, and IoStore packaging.
 
 ---
 
