@@ -41,7 +41,7 @@ function Ensure-CleanDirectory([string]$Path) {
     if (Test-Path -LiteralPath $Path) {
         Remove-Item -LiteralPath $Path -Recurse -Force
     }
-    $null = New-Item -LiteralPath $Path -ItemType Directory -Force
+    $null = New-Item -Path $Path -ItemType Directory -Force
 }
 
 function Invoke-Checked {
