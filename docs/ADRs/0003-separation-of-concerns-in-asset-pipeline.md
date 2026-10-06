@@ -1,7 +1,7 @@
 # ADR 0003: Separation of Concerns in Asset Pipeline (Orchestrator vs. Pure Domain Mutation)
 
 ## Status
-Accepted
+Superseded by [ADR 0009](0009-native-rust-cli-and-unified-build-sandbox.md) (Native Rust CLI and Unified Build Sandbox)
 
 ## Context
 In the legacy build scripts, domain JSON manipulation (splicing character routes, mutating name maps, cloning data assets) was intermixed with process management, subprocess execution, and ad-hoc file verification in sprawling procedural scripts (`build_complete_story_assets.ps1`, `Extract-RequiredAssets.ps1`, `Build-IoStore.ps1`).

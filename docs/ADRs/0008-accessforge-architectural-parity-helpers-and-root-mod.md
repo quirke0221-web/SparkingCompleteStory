@@ -1,7 +1,7 @@
 # ADR 0008: AccessForge Architectural Parity (Root Mod Folder & Helpers Disambiguation)
 
 ## Status
-Accepted
+Superseded by [ADR 0009](0009-native-rust-cli-and-unified-build-sandbox.md) (Native Rust CLI and Unified Build Sandbox)
 
 ## Context
 Following the consolidation of legacy prototypes in ADR 0007, two architectural friction points remained:
