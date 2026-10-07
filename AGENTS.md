@@ -42,12 +42,18 @@ When conducting research, investigating dependencies, analyzing game systems, or
 
 ### 1.2 Mandatory 4-Step Research Cadence (The Strategy-First Pipeline)
 Never jump blindly into research or generate research documents in a vacuum:
-1. **Pre-Research Strategy & Matrix Artifact:** An agent is **strictly FORBIDDEN** from beginning research without first authoring a dedicated **Research Strategy Artifact** (stored in the session brain artifacts directory, never committed to git). This artifact must establish:
-   - A comprehensive **Target Component Matrix** cataloging every function, RVA, asset, struct, or dependency involved, detailing: (a) Target identifier/file, (b) Assigned investigation track, (c) **Why** it must be researched, and (d) **What** it's for in the game engine.
-   - Explicit, **falsifiable hypotheses** with defined test and failure conditions.
-   - The execution sequence connecting the investigation to the forthcoming research document and implementation plan.
-2. **Targeted Dissection & Evidence Capture:** Execute the assigned investigation track (Native C++, Asset Schema, or Runtime Reflection) against local binaries, tools, and raw sources.
-3. **Chat Alignment First:** Present verified facts, raw receipts, and architectural implications in chat for human critique before committing any permanent file to `docs/research/`.
+1. **Pre-Research Strategy & Game Engine Target Matrix (Artifact):** An agent is **strictly FORBIDDEN** from beginning research without first authoring a dedicated **Research Strategy Artifact** (stored in the session brain artifacts directory, never committed to git).
+   * **The Problem-Domain Isolation Invariant (Zero Mod Code in Research):** Research (Gates 1 & 2) belongs **exclusively** to the **Problem Domain** (the target game engine). The Target Component Matrix must catalog **ONLY Dragon Ball Sparking! ZERO engine targets**:
+     - (a) Target Game Function / RVA in `SparkingZERO-Win64-Shipping.exe`
+     - (b) Target Game Asset / Package in `SparkingZERO/Content`
+     - (c) Target Engine Struct / Member Layout in Unreal Engine 5.1
+     - (d) Engine Calling Conventions, Registers, and Opcode Control Flow
+     *Mentioning, planning, or designing repository implementation code (`crates/`), mod crates, or hypothetical hooks during Gates 1 and 2 is **strictly FORBIDDEN**.* All mod-specific code and architecture belong exclusively to Gate 3 (Implementation Plan) and Gate 4 (Code Implementation).
+   * **Explicit, Falsifiable Hypotheses:** Formulate hypotheses regarding how the *game engine* behaves, with defined test and failure conditions.
+2. **Conversational Scope Alignment Gate (In Chat Before Deep Probes):**
+   * Before executing long disassembly runs, binary scans, or background tools, the agent must present the **Game Engine Scope & Target Matrix** directly in chat for conversational review and sign-off.
+   * Probes can only be executed after the user understands and approves the scope of engine systems under investigation.
+3. **Targeted Dissection & Evidence Capture:** Execute the assigned investigation track (Native C++, Asset Schema, or Runtime Reflection) against local binaries, tools, and raw sources.
 4. **Permanent Research Record:** Synthesize approved findings into a numbered research document under `docs/research/<subsystem>/` following the 06 Protocol.
 
 ### 1.3 Strict Epistemic Labeling (Anti-Assumption Creep)
