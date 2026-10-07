@@ -138,17 +138,23 @@ pub fn transform_registry_ast(root: &mut Value) -> Result<()> {
             .and_then(Value::as_array_mut)
             .context("Missing 'Value' array in PtrRecords")?;
 
-        records_val.push(new_record);
+        // Replace slot 11 (the unnamed developer placeholder 0930_00) with Complete Story
+        records_val[11] = new_record;
 
-        if records_val.len() != 13 {
-            bail!("Postcondition failed: expected 13 records, found {}", records_val.len());
+        if records_val.len() != 12 {
+            bail!("Postcondition failed: expected 12 records, found {}", records_val.len());
         }
 
         let deps = exports[0]
             .get_mut("CreateBeforeCreateDependencies")
             .and_then(Value::as_array_mut)
             .context("Missing 'CreateBeforeCreateDependencies'")?;
-        deps.push(Value::from(-((obj_import_idx as i64) + 1)));
+        let new_dep = Value::from(-((obj_import_idx as i64) + 1));
+        if let Some(pos) = deps.iter().position(|d| d.as_i64() == Some(-26)) {
+            deps[pos] = new_dep;
+        } else {
+            deps.push(new_dep);
+        }
     }
 
     let final_imports = root.get("Imports").and_then(Value::as_array).unwrap().len();

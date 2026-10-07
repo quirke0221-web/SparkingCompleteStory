@@ -111,11 +111,12 @@ pub fn transform_chart_ast(root: &mut Value) -> Result<()> {
             .and_then(Value::as_array_mut)
             .context("Missing 'Value' array in chart PtrRecords")?;
 
-        records_val.push(new_record);
+        // Replace slot 11 (the unnamed developer placeholder 0930_00) with Complete Story
+        records_val[11] = new_record;
 
-        if records_val.len() != 13 {
+        if records_val.len() != 12 {
             bail!(
-                "Chart postcondition failed: expected 13 records, found {}",
+                "Chart postcondition failed: expected 12 records, found {}",
                 records_val.len()
             );
         }
