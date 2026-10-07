@@ -57,7 +57,7 @@ fn test_chart_transformation_zero_wrapping() {
         "Detected PowerShell 'value' property wrapper bug!"
     );
 
-    // Verify key is 0000_00
+    // Verify key is ROUTE_KEY (9999_00)
     let key = entry_13
         .pointer("/0/Value/0/Value")
         .and_then(Value::as_str)

@@ -33,97 +33,20 @@ local function safe_obj_name(param)
     return "<unnamed>"
 end
 
-local function audit_and_inject_map(save_obj, label)
-    local obj = resolve_uobject(save_obj)
-    if not obj then
-        log_event("INVALID_OBJECT", label .. " is nil or invalid UObject")
-        return
-    end
-
-    local ok_cpd, cpd = pcall(function() return obj.CharacterPlayableData end)
-    if not ok_cpd then
-        log_event("PROPERTY_ERROR", label .. " failed to read CharacterPlayableData: " .. tostring(cpd))
-        return
-    end
-    if cpd == nil then
-        log_event("NULL_PROPERTY", label .. " CharacterPlayableData is nil")
-        return
-    end
-
-    log_event("PROPERTY_FOUND", label .. " CharacterPlayableData type=" .. type(cpd))
-
-    -- 1. Read vanilla Goku entry ("0000_40")
-    local ok_goku, val_goku = pcall(function() return cpd["0000_40"] end)
-    if not ok_goku then
-        log_event("READ_ERROR", label .. " cpd['0000_40'] thrown: " .. tostring(val_goku))
-    elseif val_goku == nil then
-        log_event("GOKU_NOT_FOUND", label .. " cpd['0000_40'] returned nil")
-    else
-        log_event("GOKU_READ_OK", label .. " cpd['0000_40'] = " .. tostring(val_goku))
-    end
-
-    -- 2. Read custom entry ("0000_00") before write
-    local ok_pre, val_pre = pcall(function() return cpd["0000_00"] end)
-    if not ok_pre then
-        log_event("PRE_READ_ERROR", label .. " cpd['0000_00'] thrown: " .. tostring(val_pre))
-    else
-        log_event("PRE_READ_OK", label .. " cpd['0000_00'] before write = " .. tostring(val_pre))
-    end
-
-    -- 3. Execute Mutation if template exists
-    if ok_goku and val_goku ~= nil then
-        local ok_write, write_err = pcall(function()
-            cpd["0000_00"] = val_goku
-        end)
-
-        if not ok_write then
-            log_event("WRITE_ERROR", label .. " assignment cpd['0000_00'] failed: " .. tostring(write_err))
-        else
-            log_event("WRITE_EXECUTED", label .. " assignment cpd['0000_00'] = val_goku executed")
-        end
-
-        -- 4. HARD ASSERTION: Immediate Read-Back Verification
-        local ok_post, val_post = pcall(function() return cpd["0000_00"] end)
-        if not ok_post then
-            log_event("READBACK_ERROR", label .. " readback thrown: " .. tostring(val_post))
-        elseif val_post == nil then
-            log_event("ASSERTION_FAILED", label .. " cpd['0000_00'] returned nil after write. (Map did not persist key)")
-        else
-            log_event("ASSERTION_PASSED", label .. " cpd['0000_00'] persisted in memory: " .. tostring(val_post))
-        end
-    end
-end
-
 -- Re-entrancy guard to prevent recursive invocation loops
 local in_hook = false
 
--- Hook SSDragonAdventureIFCSManager:IsPlayable (Pre & Post)
+-- Hook SSDragonAdventureIFCSManager:IsPlayable (Pre & Post passive telemetry)
 local ok_hook, hook_err = pcall(function()
     return RegisterHook(
         "/Script/SS.SSDragonAdventureIFCSManager:IsPlayable",
-        -- Pre-callback: Run memory injection before native logic evaluates
+        -- Pre-callback: Safe passive observation
         function(context)
             if in_hook then return end
             in_hook = true
 
             local hook_ok, hook_err_msg = pcall(function()
                 log_event("HOOK_INVOKED", "IsPlayable PRE on " .. safe_obj_name(context))
-
-                -- Audit SSMainGameSaveData
-                local saves_main = FindAllOf("SSMainGameSaveData")
-                if saves_main and #saves_main > 0 then
-                    for idx, s in ipairs(saves_main) do
-                        audit_and_inject_map(s, string.format("MainGameSaveData_%d", idx))
-                    end
-                end
-
-                -- Audit SSSystemSaveData
-                local saves_sys = FindAllOf("SSSystemSaveData")
-                if saves_sys and #saves_sys > 0 then
-                    for idx, s in ipairs(saves_sys) do
-                        audit_and_inject_map(s, string.format("SystemSaveData_%d", idx))
-                    end
-                end
             end)
 
             if not hook_ok then

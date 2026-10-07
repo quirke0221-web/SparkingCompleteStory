@@ -140,10 +140,10 @@ unsafe extern "system" fn init_thread(_: *mut c_void) -> u32 {
         return 3;
     }
 
-    // 3. Asynchronously resolve FName ComparisonIndex for "0000_00"
+    // 3. Asynchronously resolve FName ComparisonIndex for "9999_00"
     type FnFNameCtor = unsafe extern "C" fn(*mut FName, *const u16, u32) -> *mut FName;
     let fname_ctor: FnFNameCtor = std::mem::transmute(fname_ctor_addr);
-    let wide_route: Vec<u16> = "0000_00\0".encode_utf16().collect();
+    let wide_route: Vec<u16> = "9999_00\0".encode_utf16().collect();
 
     for attempt in 1..=60 {
         std::thread::sleep(std::time::Duration::from_millis(500));
@@ -154,14 +154,14 @@ unsafe extern "system" fn init_thread(_: *mut c_void) -> u32 {
         if fname_r.comparison_index != 0 {
             ROUTE_KEY_INDEX.store(fname_r.comparison_index, Ordering::SeqCst);
             logger::log_info(&format!(
-                "SUCCESS: Resolved FName for '0000_00' on attempt {}: ComparisonIndex={}",
+                "SUCCESS: Resolved FName for '9999_00' on attempt {}: ComparisonIndex={}",
                 attempt, fname_r.comparison_index
             ));
             return 0;
         }
     }
 
-    logger::log_warn("Timed out waiting for '0000_00' FName registration");
+    logger::log_warn("Timed out waiting for '9999_00' FName registration");
     0
 }
 

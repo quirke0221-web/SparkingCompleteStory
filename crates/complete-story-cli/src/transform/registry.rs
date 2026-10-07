@@ -2,7 +2,7 @@ use crate::transform::character::{NEW_OBJECT_NAME, NEW_PACKAGE_NAME};
 use anyhow::{bail, Context, Result};
 use serde_json::Value;
 
-pub const ROUTE_KEY: &str = "0000_00";
+pub const ROUTE_KEY: &str = "9999_00";
 
 pub fn transform_registry_ast(root: &mut Value) -> Result<()> {
     // 1. Validate layout and clone template record
