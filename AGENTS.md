@@ -60,6 +60,26 @@ An agent is **strictly FORBIDDEN** from proposing or writing implementation code
 3. **Agent Skill Exists:** A dedicated, research-backed **Agent Skill** exists providing verified usage patterns and anti-hallucination notes.
 4. **No Vibe-Coded Skills:** Skills cannot be hallucinated from parametric memory; they must be authored strictly from the verified reference materials.
 
+### 1.5 The Pre-Implementation Forensic Research Gate (The "06 Protocol")
+* **Hard Implementation Plan Gate:** An agent is **strictly FORBIDDEN** from authoring an Implementation Plan or modifying code for any feature, engine hook, data structure, or native mechanic until a dedicated, receipt-backed research document (modeled after the depth of [`docs/research/episode-battle-subsystem/06-isplayable-dissection-and-mechanics.md`](docs/research/episode-battle-subsystem/06-isplayable-dissection-and-mechanics.md)) exists and has been reviewed. Drafted implementation plans without a prior approved research document are deemed invalid and hallucination-prone.
+* **Dependency-Aware Investigation Tracks:** While `IsPlayable` required a 5-step machine code disassembly protocol, different subsystems require different investigative strategies aligned with our approved dependency matrix:
+  1. **Native C++ & Memory Engine Track** (`Dumper-7`, `MinHook`):
+     - *Step 1 (Symbol & Address Resolution):* Resolve exact function RVA, virtual method offset, or memory signature.
+     - *Step 2 (Instruction & Register Mapping):* Disassemble machine instructions, identifying calling conventions and register usage (`rcx`, `rdx`, `rax`, stack frames).
+     - *Step 3 (Control Flow & Struct Alignment):* Trace sub-calls, pointer offsets, bitfield layouts, and data structures (e.g. `TMap`, `FString`, `FName`).
+     - *Step 4 (Global Call Site Analysis):* Scan the PE image (`.text`) for all callers to uncover hidden callers, UI widget builders, or Blueprint bypasses.
+     - *Step 5 (Structural Documentation):* Author a dedicated research document with full disassembly listings, opcodes, and control flow diagrams.
+  2. **Asset Serialization & Schema Track** (`FModel` + `.usmap`, `UAssetGUI`):
+     - *Step 1 (Schema & Type Reflection):* Use `.usmap` mappings to resolve unversioned property indices, struct types, and property names.
+     - *Step 2 (AST & Binary Layout Dissection):* Inspect raw JSON AST and decode binary export payloads (e.g., base64 `RawExport`), mapping byte offsets, string lengths, and flags.
+     - *Step 3 (Container & Packaging Validation):* Trace Zen IoStore container requirements (`retoc`) and dependency tables (`CreateBeforeCreateDependencies`).
+     - *Step 4 (Structural Documentation):* Author a dedicated research document detailing exact field offsets, schemas, and serialization rules.
+  3. **Runtime Reflection & Scripting Track** (`RE-UE4SS`):
+     - *Step 1 (UObject / UFunction Verification):* Confirm class hierarchy, reflection properties, and native function availability in memory.
+     - *Step 2 (Frame & Parameter Inspection):* Trace `FFrame` parameter processing and return value handling (adhering to parameterless hook limitations).
+     - *Step 3 (Memory Safety & Lifecycle Audit):* Verify GameThread execution safety and ban transient Slate widget scraping.
+     - *Step 4 (Structural Documentation):* Author a dedicated research document detailing runtime hooks, verified object paths, and memory safety boundaries.
+
 ---
 
 ## 2. Intent Alignment & Non-Technical Playtester Gate
