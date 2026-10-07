@@ -34,7 +34,8 @@ docs/research/episode-battle-subsystem/
 ├── 05-custom-saga-runbook.md           <-- Master Synthesis: The Step-by-Step Integration Checklist
 ├── 06-isplayable-dissection-and-mechanics.md <-- Definitive IsPlayable Disassembly, 3-Tier Hierarchy & UI Callers
 ├── 07-custom-saga-key-mechanics-and-dispatch.md <-- Machine-Level Disassembly of All 6 Callers & Character Asset Layout
-└── 08-carousel-name-resolution-and-binding.md   <-- Disassembly of Button Text Updater, Recycling Bypass & Localization
+├── 08-carousel-name-resolution-and-binding.md   <-- Disassembly of Button Text Updater, Recycling Bypass & Localization
+└── 09-carousel-population-and-array-allocation.md <-- Carousel Allocation, Array Sizing & Ghost Slot Mechanics
 ```
 
 ---
@@ -81,4 +82,5 @@ flowchart TD
 | **[`06-isplayable-dissection-and-mechanics.md`](06-isplayable-dissection-and-mechanics.md)** | **MSVC dumpbin** + **Disassembly** | Exhaustive machine code disassembly of `IsPlayable`, revealing the 3-tier hierarchy, Tier 3 save query engine (`0x2510ED0`), the UI carousel widget builder (`0x24F602D`), and why prior hooks failed. |
 | **[`07-custom-saga-key-mechanics-and-dispatch.md`](07-custom-saga-key-mechanics-and-dispatch.md)** | **MSVC dumpbin** + **Binary Analysis** | Disassembly of all 6 callers of Tier 3, proving dynamic array bounds without 12-slot limit, and full 364-byte decoding of `DAIF_CharaData`. |
 | **[`08-carousel-name-resolution-and-binding.md`](08-carousel-name-resolution-and-binding.md)** | **MSVC dumpbin** + **PE Scanner** | Forensic disassembly of Button Text Updater (`0x14447AF30`), proving the recycling bypass guard skipping `SetText`, and full localization reference map. |
+| **[`09-carousel-population-and-array-allocation.md`](09-carousel-population-and-array-allocation.md)** | **MSVC dumpbin** + **UAssetGUI** | Disassembly of CSManager active slot controller (`0x1424EF6D0`), array population (`0x1424F85A0`), and proving the root cause of the 12-slot ghost button mirroring anomaly. |
 
