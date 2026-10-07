@@ -33,7 +33,8 @@ docs/research/episode-battle-subsystem/
 ├── 04-entitlements-and-dlc-system.md   <-- Licensing, Steam Store Modal Triggers & DlcKeys
 ├── 05-custom-saga-runbook.md           <-- Master Synthesis: The Step-by-Step Integration Checklist
 ├── 06-isplayable-dissection-and-mechanics.md <-- Definitive IsPlayable Disassembly, 3-Tier Hierarchy & UI Callers
-└── 07-custom-saga-key-mechanics-and-dispatch.md <-- Machine-Level Disassembly of All 6 Callers & Character Asset Layout
+├── 07-custom-saga-key-mechanics-and-dispatch.md <-- Machine-Level Disassembly of All 6 Callers & Character Asset Layout
+└── 08-carousel-name-resolution-and-binding.md   <-- Disassembly of Button Text Updater, Recycling Bypass & Localization
 ```
 
 ---
@@ -79,4 +80,5 @@ flowchart TD
 | **[`05-custom-saga-runbook.md`](05-custom-saga-runbook.md)** | **Synthesis** | The definitive, actionable, step-by-step checklist to register, unlock, and launch any custom Episode Battle saga, citing verified receipts from docs 01–04. |
 | **[`06-isplayable-dissection-and-mechanics.md`](06-isplayable-dissection-and-mechanics.md)** | **MSVC dumpbin** + **Disassembly** | Exhaustive machine code disassembly of `IsPlayable`, revealing the 3-tier hierarchy, Tier 3 save query engine (`0x2510ED0`), the UI carousel widget builder (`0x24F602D`), and why prior hooks failed. |
 | **[`07-custom-saga-key-mechanics-and-dispatch.md`](07-custom-saga-key-mechanics-and-dispatch.md)** | **MSVC dumpbin** + **Binary Analysis** | Disassembly of all 6 callers of Tier 3, proving dynamic array bounds without 12-slot limit, and full 364-byte decoding of `DAIF_CharaData`. |
+| **[`08-carousel-name-resolution-and-binding.md`](08-carousel-name-resolution-and-binding.md)** | **MSVC dumpbin** + **PE Scanner** | Forensic disassembly of Button Text Updater (`0x14447AF30`), proving the recycling bypass guard skipping `SetText`, and full localization reference map. |
 
