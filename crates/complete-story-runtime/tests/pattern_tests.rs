@@ -87,8 +87,22 @@ fn test_exec_functions_signature_and_prologue() {
         // SetActiveSlotBounds at RVA 0x24EF6D0 -> file offset 0x24EECD0
         let bounds_off = 0x24EECD0usize;
         let bounds_prologue = &bytes[bounds_off..bounds_off + 10];
-        println!("Bounds prologue at 0x24EECD0: {:02X?}", bounds_prologue);
+        assert_eq!(
+            bounds_prologue,
+            &[0x48, 0x8B, 0xC4, 0x55, 0x53, 0x57, 0x48, 0x8D, 0x68, 0xA1]
+        );
+
+        // CSManager Array Population Loop at RVA 0x24F8B2F -> file offset 0x24F812F
+        let loop_off = 0x24F812Fusize;
+        let loop_prologue = &bytes[loop_off..loop_off + 7];
+        assert_eq!(
+            loop_prologue,
+            &[0x48, 0x8B, 0x35, 0x5A, 0x49, 0x21, 0x06]
+        );
     }
 }
+
+
+
 
 
