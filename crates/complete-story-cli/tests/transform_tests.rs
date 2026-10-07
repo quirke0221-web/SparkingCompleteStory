@@ -89,7 +89,7 @@ fn test_registry_transformation_integrity() {
     assert_eq!(imports[27]["ObjectName"], NEW_PACKAGE_NAME);
     assert_eq!(imports[28]["ObjectName"], NEW_OBJECT_NAME);
 
-    // Verify DefaultOpenCharacter is unlocked for Complete Story (0000_00)
+    // Verify DefaultOpenCharacter remains stock Goku (0000_40)
     let export_data = reg_ast
         .pointer("/Exports/0/Data")
         .and_then(Value::as_array)
@@ -102,7 +102,7 @@ fn test_registry_transformation_integrity() {
         .pointer("/Value/0/Value")
         .and_then(Value::as_str)
         .expect("DefaultOpenCharacter key missing");
-    assert_eq!(default_char, ROUTE_KEY);
+    assert_eq!(default_char, "0000_40");
 }
 
 #[test]
