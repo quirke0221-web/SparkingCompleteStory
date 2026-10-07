@@ -81,9 +81,11 @@ flowchart TD
 
 * **Primary Subsystem:** Asset Localization & UI Text Rendering (`FText` serialization, String Table bridging).
 * **Objective:** Replace the duplicate "Goku" title on slot #13 banner with **"Complete Story"**.
-* **Research Focus:**
-  - Investigate whether `DAIF_CharaData_CompleteStory` can serialize `FText` with `CultureInvariant` flags (`Flags = 2`, `HistoryType = -1`), or if String Table injection / hooking in `complete-story-runtime` is required.
-  - Verify that modified `Exports[0].Data` compiles cleanly through UAssetGUI (`fromjson`) and loads in the Zen IoStore container without crashing.
+* **Research Focus (Game Engine Dissection & 06 Protocol):**
+  - **Native Engine Functions & RVAs:** Trace the carousel button updater (`0x1424F6060`), character data getter (`0x144460E40`), and text-binding caller in `SparkingZERO-Win64-Shipping.exe`.
+  - **String Table Resolution:** Disassemble how the engine queries `/Game/SS/StringTables/Event/ST_ADIF_CHR_NAME` and determine why recycled widgets retain previous labels when an entry is unmapped.
+  - **Binary Payload Layout:** Dissect the unversioned `FText` payload at `Exports[0].Data` offset `0x08`–`0x31` in `SSDragonAdventureIFCharacterDataAsset`.
+  - **Reference Guide Deliverable:** Author [`08-carousel-name-resolution-and-binding.md`](../research/episode-battle-subsystem/08-carousel-name-resolution-and-binding.md) as the authoritative game engine reference guide before authoring the Stage 2 implementation plan.
 * **Exit Gate (Verification):**
   - Slot #13 banner explicitly reads **"Complete Story"** in the game UI.
   - Vanilla character names (slots 1–12) remain 100% unaltered.
@@ -94,9 +96,10 @@ flowchart TD
 
 * **Primary Subsystem:** Narrative Mission Flowchart & UI Information Card (`ST_ADIF_SYNOPSIS`, `DIF_Event`, `EventBlock`).
 * **Objective:** Display custom story synopsis on the right-hand character overview panel and route chapter start to the custom opening event.
-* **Research Focus:**
-  - Determine safe character length limits for the narrative synopsis text box.
-  - Verify flowchart node linkage between `DragonAdventureIFChartData` (`9999_00`) and the opening cinematic/battle sequence.
+* **Research Focus (Game Engine Dissection & 06 Protocol):**
+  - **Native Engine Functions & RVAs:** Disassemble the native synopsis card loader and opening event transition dispatcher in `SparkingZERO-Win64-Shipping.exe`.
+  - **Asset Schemas & String Tables:** Map `ST_ADIF_SYNOPSIS` string table references and `DragonAdventureIFChartData` node linkages in vanilla game assets.
+  - **Reference Guide Deliverable:** Author dedicated research document in `docs/research/episode-battle-subsystem/` before authoring the Stage 3 implementation plan.
 * **Exit Gate (Verification):**
   - Character select overview panel displays the custom Complete Story synopsis.
   - Chapter start proceeds to the custom introductory battle sequence.

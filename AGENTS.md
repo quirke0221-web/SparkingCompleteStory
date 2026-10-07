@@ -93,6 +93,11 @@ An agent is **strictly FORBIDDEN** from proposing or writing implementation code
      - *Step 3 (Memory Safety & Lifecycle Audit):* Verify GameThread execution safety and ban transient Slate widget scraping.
      - *Step 4 (Structural Documentation):* Author a dedicated research document detailing runtime hooks, verified object paths, and memory safety boundaries.
 
+### 1.6 The Game Engine Reference Guide Invariant (Research as Empirical Reference Guide)
+* **Purpose of the Research Document:** Every research document under `docs/research/` exists to serve as the authoritative, permanent **Reference Guide** for Dragon Ball Sparking! ZERO's native source functions, calling conventions, binary layouts, and blast radius.
+* **Blast Radius Mapping:** Before the mod touches, hooks, or feeds data into any native function or asset, the research phase must identify and trace the entire blast radius of native game functions involved.
+* **Strict Problem-Domain Isolation:** Research is strictly about how the game engine behaves natively. An agent is **strictly FORBIDDEN** from designing, discussing, or introducing mod implementation code (`crates/`, mod crates, hooks) during Gates 1 and 2. All mod-specific architecture belongs exclusively to Gate 3 (Implementation Plan) and Gate 4 (Code Implementation).
+
 ---
 
 ## 2. Intent Alignment & Non-Technical Playtester Gate
