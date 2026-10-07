@@ -138,15 +138,10 @@ pub fn transform_registry_ast(root: &mut Value) -> Result<()> {
             .and_then(Value::as_array_mut)
             .context("Missing 'Value' array in PtrRecords")?;
 
-        // Prune placeholder slots (indices 8..), retaining 8 official playable campaigns
-        records_val.truncate(8);
         records_val.push(new_record);
 
-        if records_val.len() != 9 {
-            bail!(
-                "Postcondition failed: expected 9 records (8 official + Complete Story), found {}",
-                records_val.len()
-            );
+        if records_val.len() != 13 {
+            bail!("Postcondition failed: expected 13 records, found {}", records_val.len());
         }
 
         let deps = exports[0]

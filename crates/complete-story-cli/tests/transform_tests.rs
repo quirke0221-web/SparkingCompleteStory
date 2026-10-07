@@ -35,33 +35,33 @@ fn test_chart_transformation_zero_wrapping() {
         .and_then(Value::as_array)
         .expect("Records array missing");
 
-    // Must be exactly 9 records (8 official + Complete Story)
-    assert_eq!(records.len(), 9, "Expected 9 records in chart data");
+    // Must be exactly 13 records
+    assert_eq!(records.len(), 13, "Expected 13 records in chart data");
 
-    // 9th entry must be a native 2-element JSON array [StructData, ObjectData]
-    let entry_9 = &records[8];
+    // 13th entry must be a native 2-element JSON array [StructData, ObjectData]
+    let entry_13 = &records[12];
     assert!(
-        entry_9.is_array(),
-        "9th chart entry must be a native JSON array, NOT an object wrapper!"
+        entry_13.is_array(),
+        "13th chart entry must be a native JSON array, NOT an object wrapper!"
     );
-    let entry_arr = entry_9.as_array().unwrap();
-    assert_eq!(entry_arr.len(), 2, "9th chart entry must have 2 elements");
+    let entry_arr = entry_13.as_array().unwrap();
+    assert_eq!(entry_arr.len(), 2, "13th chart entry must have 2 elements");
 
     // Verify it is NOT the PowerShell { value: [...], Count: 2 } wrapper bug
     assert!(
-        entry_9.get("Count").is_none(),
+        entry_13.get("Count").is_none(),
         "Detected PowerShell 'Count' property bug!"
     );
     assert!(
-        entry_9.get("value").is_none(),
+        entry_13.get("value").is_none(),
         "Detected PowerShell 'value' property wrapper bug!"
     );
 
     // Verify key is ROUTE_KEY (9999_00)
-    let key = entry_9
+    let key = entry_13
         .pointer("/0/Value/0/Value")
         .and_then(Value::as_str)
-        .expect("Missing key in 9th entry");
+        .expect("Missing key in 13th entry");
     assert_eq!(key, ROUTE_KEY);
 }
 
@@ -76,7 +76,7 @@ fn test_registry_transformation_integrity() {
         .and_then(Value::as_array)
         .expect("Records array missing");
 
-    assert_eq!(records.len(), 9, "Expected 9 records in master registry");
+    assert_eq!(records.len(), 13, "Expected 13 records in master registry");
 
     let imports = reg_ast
         .get("Imports")
