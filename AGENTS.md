@@ -40,11 +40,15 @@ When conducting research, investigating dependencies, analyzing game systems, or
 * If an agent cannot obtain a live receipt, it is barred from presenting the claim as fact. It must explicitly state:  
   `[UNVERIFIED HYPOTHESIS: Requires investigation via <specific search/tool>]`
 
-### 1.2 Mandatory 3-Step Research Cadence
-Never generate research documents in a vacuum or run a superficial 30-second query:
-1. **Search & Primary Source Identification:** Formulate targeted queries to identify authoritative primary repositories (GitHub, official docs, trusted mod hubs).
-2. **Raw Extraction:** Fetch and inspect the raw text/markdown directly (e.g. `raw.githubusercontent.com/.../README.md`) rather than summarizing search result snippets.
-3. **Chat Alignment First:** Present the verified facts, the raw receipts, and their architectural implications in chat for human critique before writing any permanent file to `docs/research/`.
+### 1.2 Mandatory 4-Step Research Cadence (The Strategy-First Pipeline)
+Never jump blindly into research or generate research documents in a vacuum:
+1. **Pre-Research Strategy & Matrix Artifact:** An agent is **strictly FORBIDDEN** from beginning research without first authoring a dedicated **Research Strategy Artifact** (stored in the session brain artifacts directory, never committed to git). This artifact must establish:
+   - A comprehensive **Target Component Matrix** cataloging every function, RVA, asset, struct, or dependency involved, detailing: (a) Target identifier/file, (b) Assigned investigation track, (c) **Why** it must be researched, and (d) **What** it's for in the game engine.
+   - Explicit, **falsifiable hypotheses** with defined test and failure conditions.
+   - The execution sequence connecting the investigation to the forthcoming research document and implementation plan.
+2. **Targeted Dissection & Evidence Capture:** Execute the assigned investigation track (Native C++, Asset Schema, or Runtime Reflection) against local binaries, tools, and raw sources.
+3. **Chat Alignment First:** Present verified facts, raw receipts, and architectural implications in chat for human critique before committing any permanent file to `docs/research/`.
+4. **Permanent Research Record:** Synthesize approved findings into a numbered research document under `docs/research/<subsystem>/` following the 06 Protocol.
 
 ### 1.3 Strict Epistemic Labeling (Anti-Assumption Creep)
 To prevent unverified guesses from mutating into requirements, all project documentation and research notes must categorize claims using explicit epistemic tags:
@@ -61,7 +65,10 @@ An agent is **strictly FORBIDDEN** from proposing or writing implementation code
 4. **No Vibe-Coded Skills:** Skills cannot be hallucinated from parametric memory; they must be authored strictly from the verified reference materials.
 
 ### 1.5 The Pre-Implementation Forensic Research Gate (The "06 Protocol")
+* **The 4-Tier Governance Pipeline:** Every technical milestone must progress strictly through four distinct gates:
+  $$\text{Strategy Artifact (Brain)} \longrightarrow \text{Research Document (docs/research/)} \longrightarrow \text{Implementation Plan (Brain)} \longrightarrow \text{Code Implementation}$$
 * **Hard Implementation Plan Gate:** An agent is **strictly FORBIDDEN** from authoring an Implementation Plan or modifying code for any feature, engine hook, data structure, or native mechanic until a dedicated, receipt-backed research document (modeled after the depth of [`docs/research/episode-battle-subsystem/06-isplayable-dissection-and-mechanics.md`](docs/research/episode-battle-subsystem/06-isplayable-dissection-and-mechanics.md)) exists and has been reviewed. Drafted implementation plans without a prior approved research document are deemed invalid and hallucination-prone.
+* **Pre-Research Strategy Prerequisite:** An agent is **strictly FORBIDDEN** from starting research without first authoring the Research Strategy Artifact mandated in §1.2.
 * **Dependency-Aware Investigation Tracks:** While `IsPlayable` required a 5-step machine code disassembly protocol, different subsystems require different investigative strategies aligned with our approved dependency matrix:
   1. **Native C++ & Memory Engine Track** (`Dumper-7`, `MinHook`):
      - *Step 1 (Symbol & Address Resolution):* Resolve exact function RVA, virtual method offset, or memory signature.
