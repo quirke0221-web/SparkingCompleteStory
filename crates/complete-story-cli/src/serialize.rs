@@ -21,6 +21,9 @@ pub fn uasset_to_json(
     }
 
     let mut cmd = Command::new(&config.uassetgui_exe);
+    if let Some(parent) = config.uassetgui_exe.parent() {
+        cmd.current_dir(parent);
+    }
     cmd.arg("--portable")
         .arg("tojson")
         .arg(source_uasset)
@@ -65,6 +68,9 @@ pub fn json_to_uasset(
     }
 
     let mut cmd = Command::new(&config.uassetgui_exe);
+    if let Some(parent) = config.uassetgui_exe.parent() {
+        cmd.current_dir(parent);
+    }
     cmd.arg("--portable")
         .arg("fromjson")
         .arg(source_json)

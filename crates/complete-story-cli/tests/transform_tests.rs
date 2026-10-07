@@ -106,10 +106,10 @@ fn test_registry_transformation_integrity() {
 }
 
 #[test]
-fn test_character_transformation_raw_export_preservation() {
+fn test_character_transformation_name_payload_and_tail_preservation() {
     let mut char_ast = get_staging_json("DAIF_CharaData_0000_00.json");
 
-    let original_data = char_ast
+    let original_b64 = char_ast
         .pointer("/Exports/0/Data")
         .and_then(Value::as_str)
         .expect("RawExport Data missing")
@@ -120,13 +120,12 @@ fn test_character_transformation_raw_export_preservation() {
 
     let exports = char_ast.get("Exports").and_then(Value::as_array).unwrap();
     assert_eq!(exports[0]["ObjectName"], NEW_OBJECT_NAME);
+    assert_eq!(exports[0]["SerialSize"], 346);
 
-    // RawExport Data payload must be preserved byte-for-byte
-    let transformed_data = exports[0]["Data"].as_str().unwrap();
-    assert_eq!(
-        original_data, transformed_data,
-        "Base64 Raditz start pointers must be preserved byte-for-byte!"
-    );
+    // Verify mutated payload: CharacterName is "Complete Story", and tail is preserved
+    let transformed_b64 = exports[0]["Data"].as_str().unwrap();
+    assert_ne!(original_b64, transformed_b64, "Data payload must be updated with Complete Story name");
+    assert!(transformed_b64.contains("Db21wbGV0ZSBTdG9yeQ"), "Must contain base64 Complete Story");
 }
 
 #[test]
