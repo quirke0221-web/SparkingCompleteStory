@@ -1,6 +1,7 @@
 use complete_story_runtime::pattern::find_pattern;
 use complete_story_runtime::FName;
 
+
 #[test]
 fn test_exact_pattern_match() {
     let buffer = [0x90, 0x90, 0x48, 0x89, 0x5C, 0x24, 0x08, 0xC3];
@@ -82,6 +83,12 @@ fn test_exec_functions_signature_and_prologue() {
             playable_save_prologue,
             &[0x48, 0x89, 0x5C, 0x24, 0x08, 0x57, 0x48, 0x83, 0xEC, 0x20, 0x48, 0x8B]
         );
+
+        // SetActiveSlotBounds at RVA 0x24EF6D0 -> file offset 0x24EECD0
+        let bounds_off = 0x24EECD0usize;
+        let bounds_prologue = &bytes[bounds_off..bounds_off + 10];
+        println!("Bounds prologue at 0x24EECD0: {:02X?}", bounds_prologue);
     }
 }
+
 
