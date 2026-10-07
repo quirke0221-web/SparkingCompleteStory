@@ -20,10 +20,8 @@ use windows_sys::Win32::System::SystemServices::DLL_PROCESS_ATTACH;
 
 const FNAME_CONSTRUCTOR_FALLBACK_RVA: usize = 0x2CFD260;
 const IS_CHARACTER_PLAYABLE_IN_SAVE_RVA: usize = 0x2510ED0;
-const EXEC_IS_MODE_START_RVA: usize = 0x1EC3580;
 
 static ORIGINAL_IS_PLAYABLE_IN_SAVE: AtomicPtr<c_void> = AtomicPtr::new(std::ptr::null_mut());
-static ORIGINAL_EXEC_IS_MODE_START: AtomicPtr<c_void> = AtomicPtr::new(std::ptr::null_mut());
 static ROUTE_KEY_INDEX: AtomicU32 = AtomicU32::new(0);
 static OVERRIDE_COUNT: AtomicU32 = AtomicU32::new(0);
 
@@ -64,28 +62,6 @@ unsafe extern "C" fn detour_is_character_playable_in_save(key_ptr: *const FName)
     }
 }
 
-/// Native detour for Tier 1: execIsModeStart (RVA 0x1EC3580)
-/// Ensures confirmation dispatch immediately initiates chapter start.
-unsafe extern "C" fn detour_exec_is_mode_start(
-    context: *mut c_void,
-    stack: *mut c_void,
-    result: *mut c_void,
-) {
-    let orig = ORIGINAL_EXEC_IS_MODE_START.load(Ordering::Relaxed);
-    if !orig.is_null() {
-        type FnNative = unsafe extern "C" fn(*mut c_void, *mut c_void, *mut c_void);
-        let original: FnNative = std::mem::transmute(orig);
-        original(context, stack, result);
-    }
-    if !result.is_null() {
-        *(result as *mut bool) = true;
-        let count = OVERRIDE_COUNT.fetch_add(1, Ordering::Relaxed);
-        if count < 50 {
-            logger::log_info(&format!("[EXEC_HOOK] Overrode execIsModeStart -> true (#{})", count + 1));
-        }
-    }
-}
-
 unsafe extern "system" fn init_thread(_: *mut c_void) -> u32 {
     logger::log_info("Native runtime thread initialized. Scanning memory...");
 
@@ -120,19 +96,6 @@ unsafe extern "system" fn init_thread(_: *mut c_void) -> u32 {
             playable_save_addr, p_playable
         ));
         return 2;
-    }
-
-    // 2. Install native MinHook detour on execIsModeStart (RVA 0x1EC3580)
-    let exec_mode_start_addr = (base + EXEC_IS_MODE_START_RVA) as *mut c_void;
-    let p_mode = std::slice::from_raw_parts(exec_mode_start_addr as *const u8, 6);
-    if p_mode == [0x40, 0x53, 0x48, 0x83, 0xEC, 0x20] {
-        if let Ok(orig) = MinHook::create_hook(exec_mode_start_addr, detour_exec_is_mode_start as _) {
-            ORIGINAL_EXEC_IS_MODE_START.store(orig as *mut c_void, Ordering::Relaxed);
-            logger::log_info(&format!(
-                "SUCCESS: Hooked execIsModeStart at {:p}",
-                exec_mode_start_addr
-            ));
-        }
     }
 
     if let Err(e) = MinHook::enable_all_hooks() {

@@ -111,8 +111,8 @@ pub fn transform_chart_ast(root: &mut Value) -> Result<()> {
             .and_then(Value::as_array_mut)
             .context("Missing 'Value' array in chart PtrRecords")?;
 
-        // Replace slot 11 (the unnamed developer placeholder 0930_00) with Complete Story
-        records_val[11] = new_record;
+        // Replace slot 8 (cut Cell placeholder 0153_00) with Complete Story
+        records_val[8] = new_record;
 
         if records_val.len() != 12 {
             bail!(

@@ -38,30 +38,30 @@ fn test_chart_transformation_zero_wrapping() {
     // Must be exactly 12 records
     assert_eq!(records.len(), 12, "Expected 12 records in chart data");
 
-    // 12th entry (index 11) must be a native 2-element JSON array [StructData, ObjectData]
-    let entry_12 = &records[11];
+    // 9th entry (index 8) must be a native 2-element JSON array [StructData, ObjectData]
+    let entry_9 = &records[8];
     assert!(
-        entry_12.is_array(),
-        "12th chart entry must be a native JSON array, NOT an object wrapper!"
+        entry_9.is_array(),
+        "9th chart entry must be a native JSON array, NOT an object wrapper!"
     );
-    let entry_arr = entry_12.as_array().unwrap();
-    assert_eq!(entry_arr.len(), 2, "12th chart entry must have 2 elements");
+    let entry_arr = entry_9.as_array().unwrap();
+    assert_eq!(entry_arr.len(), 2, "9th chart entry must have 2 elements");
 
     // Verify it is NOT the PowerShell { value: [...], Count: 2 } wrapper bug
     assert!(
-        entry_12.get("Count").is_none(),
+        entry_9.get("Count").is_none(),
         "Detected PowerShell 'Count' property bug!"
     );
     assert!(
-        entry_12.get("value").is_none(),
+        entry_9.get("value").is_none(),
         "Detected PowerShell 'value' property wrapper bug!"
     );
 
     // Verify key is ROUTE_KEY (9999_00)
-    let key = entry_12
+    let key = entry_9
         .pointer("/0/Value/0/Value")
         .and_then(Value::as_str)
-        .expect("Missing key in 12th entry");
+        .expect("Missing key in 9th entry");
     assert_eq!(key, ROUTE_KEY);
 }
 
@@ -77,11 +77,11 @@ fn test_registry_transformation_integrity() {
         .expect("Records array missing");
 
     assert_eq!(records.len(), 12, "Expected 12 records in master registry");
-    let key_11 = records[11]
+    let key_8 = records[8]
         .pointer("/0/Value/0/Value")
         .and_then(Value::as_str)
-        .expect("Missing key in 12th entry");
-    assert_eq!(key_11, ROUTE_KEY);
+        .expect("Missing key in 9th entry (index 8)");
+    assert_eq!(key_8, ROUTE_KEY);
 
     let imports = reg_ast
         .get("Imports")
