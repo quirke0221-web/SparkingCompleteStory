@@ -75,9 +75,13 @@ fn test_exec_functions_signature_and_prologue() {
         let playable_prologue = &bytes[playable_off..playable_off + 6];
         assert_eq!(playable_prologue, &[0x40, 0x53, 0x48, 0x83, 0xEC, 0x20]);
 
-        // SSDragonAdventureIFCSManager::IsPlayable at RVA 0x24F1430 -> file offset (0x24F1430 - 0x1000) + 0x600 = 0x24F0A30
-        let is_playable_impl_off = (0x24F1430 - 0x1000) + 0x600;
-        println!("SSDragonAdventureIFCSManager::IsPlayable at 0x{:X}: {:02X?}", is_playable_impl_off, &bytes[is_playable_impl_off..is_playable_impl_off + 64]);
+        // IsCharacterPlayableInSave at RVA 0x2510ED0 -> file offset 0x25104D0
+        let playable_save_off = 0x25104D0usize;
+        let playable_save_prologue = &bytes[playable_save_off..playable_save_off + 12];
+        assert_eq!(
+            playable_save_prologue,
+            &[0x48, 0x89, 0x5C, 0x24, 0x08, 0x57, 0x48, 0x83, 0xEC, 0x20, 0x48, 0x8B]
+        );
     }
 }
 

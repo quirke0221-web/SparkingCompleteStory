@@ -31,7 +31,8 @@ docs/research/episode-battle-subsystem/
 ├── 02-cpp-manager-and-lifecycle.md     <-- SSDragonAdventureIFCSManager, Functions & Memory Offsets
 ├── 03-save-data-interface.md           <-- SSMainGameSaveData, CharacterPlayableData & Persistence
 ├── 04-entitlements-and-dlc-system.md   <-- Licensing, Steam Store Modal Triggers & DlcKeys
-└── 05-custom-saga-runbook.md           <-- Master Synthesis: The Step-by-Step Integration Checklist
+├── 05-custom-saga-runbook.md           <-- Master Synthesis: The Step-by-Step Integration Checklist
+└── 06-isplayable-dissection-and-mechanics.md <-- Definitive IsPlayable Disassembly, 3-Tier Hierarchy & UI Callers
 ```
 
 ---
@@ -75,3 +76,5 @@ flowchart TD
 | **[`03-save-data-interface.md`](03-save-data-interface.md)** | **Dumper-7** + **UE4SS GUI** | Memory layout of `SSMainGameSaveData` and `CharacterPlayableData`, live RAM snapshots on fresh save, and analysis of why runtime map mutations failed in Lua. |
 | **[`04-entitlements-and-dlc-system.md`](04-entitlements-and-dlc-system.md)** | **FModel** + **Dumper-7** | Investigation of DLC license checks, Steam store modal trigger mechanisms, and auditing DataTables (`DT_DlcList`, `DT_CharacterDlc`) for custom character keys. |
 | **[`05-custom-saga-runbook.md`](05-custom-saga-runbook.md)** | **Synthesis** | The definitive, actionable, step-by-step checklist to register, unlock, and launch any custom Episode Battle saga, citing verified receipts from docs 01–04. |
+| **[`06-isplayable-dissection-and-mechanics.md`](06-isplayable-dissection-and-mechanics.md)** | **MSVC dumpbin** + **Disassembly** | Exhaustive machine code disassembly of `IsPlayable`, revealing the 3-tier hierarchy, Tier 3 save query engine (`0x2510ED0`), the UI carousel widget builder (`0x24F602D`), and why prior hooks failed. |
+
