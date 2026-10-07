@@ -97,8 +97,8 @@ Each character campaign references a dedicated `SSDragonAdventureIFCharacterData
 | Dimension / Property | Vanilla Goku (`0000_40`) | Complete Story (`0000_00`) | Engine Impact & Finding |
 |---|---|---|---|
 | **Carousel Key** | `0000_40` | `0000_00` | Both present in `PtrRecords` (12 stock + 1 custom). |
-| **DefaultOpenCharacter** | `"0000_40"` (Stock) | Mutated to `"0000_00"` | `[OBSERVATION]` In v0.4, setting this alone did not show the gold New Game badge. |
-| **DLC Entitlement** | None (Base Game) | DLC 013 (Tested in v0.5) | `[FACT]` Appending `0000_00` to `DLC 013 AdventureIFCharacterIds` in v0.5 still resulted in "Unlock" button and storefront popup. |
+| **DefaultOpenCharacter** | `"0000_40"` (Stock) | Mutated to `"0000_00"` | `[OBSERVATION]` Setting this alone in the asset does not switch the tile badge. |
+| **DLC Entitlement** | None (Base Game) | None (Base Game) | `[FACT]` Registered outside `DownLoadContentsData`. |
 | **Save Data Persistence** | Registered in `CharacterPlayableData` | Missing from `CharacterPlayableData` | `[FACT]` On fresh save, save map contains entries evaluated via `EKoratUnLockMode`. |
 | **Flowchart Node Root** | Points to stock Goku saga | Re-uses Raditz start pointers | Flowchart pointers are syntactically valid but require runtime traversal verification. |
 

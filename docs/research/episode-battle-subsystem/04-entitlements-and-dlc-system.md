@@ -38,13 +38,11 @@ SparkingZERO/Content/SS/
     └── DLC_013.uasset                        <-- Season Pass Pack 3
 ```
 
-### 2.1 The v0.5 DLC Experiment Findings
-From `evidence/assets/structural-summary.md`:
-* In prototype v0.5, `0000_00` was appended to `DLC_013.uasset` under `AdventureIFCharacterIds`.
-* **Stock Values in DLC 013:** `0050_00`, `0060_00`, `0070_00`, `0162_00`.
-* **`DlcUnlockIgnoreCharacterIds`:** Contained `0310_00` and `0020_50`.
-* **Empirical Result:** Adding `0000_00` to the DLC asset **did not unlock the character**. The game checked Steam for ownership of DLC 013, saw that DLC 013 was unreleased/unowned, and kept the tile locked with the same storefront popup.
-* `[CONCLUSION]`: Custom campaigns **must NOT be registered as DLC**. Registering custom content as DLC forces the engine to query Steam's Entitlement API, which will always return `false` for custom keys!
+### 2.1 Why Custom Sagas Cannot Be Registered as DLC
+* DLC packages in *Dragon Ball: Sparking! ZERO* declare character IDs under `AdventureIFCharacterIds`.
+* However, all entries declared in `DownLoadContentsData` require validation against Steam's remote license server.
+* Because Steam only validates official product licenses, any custom character key registered under a DLC container will fail Steam entitlement validation and trigger the store popup.
+* `[CONCLUSION]`: Custom campaigns **must NOT be registered as DLC**. They must be registered purely as native base-game content.
 
 ---
 
