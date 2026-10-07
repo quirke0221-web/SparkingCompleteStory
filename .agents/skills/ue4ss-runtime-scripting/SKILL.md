@@ -52,6 +52,12 @@ Every rule below cites its receipt. `[L:name]` = upstream Lua doc file, `[INI]` 
 - `[LOCAL]` Episode Battle Manager class is `/Script/SS.SSDragonAdventureIFCSManager` (module name is `SS`, **not** `SparkingZERO`; `evidence/object-dump/episode-battle-symbols.txt` line 178).
 - `[LOCAL]` Function is `/Script/SS.SSDragonAdventureIFCSManager:IsPlayable` (lines 473-474). Its only declared parameter is `ReturnValue` (`BoolProperty`). No input parameters exist on this function.
 
+### 2.4 Parameterless UFunction Return Value Override Bug (`LuaMod.cpp` line 315)
+- `[FACT]` In RE-UE4SS `v3.0.1 Beta` (`4e5461c`), `RegisterHook` cannot override the return value of parameterless native functions (functions where `GetNumParms() == 1` and input parameter count is `0`, such as `IsPlayable` or `IsModeStart`).
+- `[RECEIPT]` In `UE4SS/src/Mod/LuaMod.cpp` line 315, the loop setting `lua_data.return_property` is guarded by `if (has_properties_to_process && context.TheStack.Locals())`. For native parameterless functions, `TheStack.Locals()` is `nullptr`. Consequently, `lua_data.return_property` remains `nullptr`, causing `process_return_value()` (line 239: `else if (... && lua_data.return_property && context.RESULT_DECL)`) to silently evaluate to false and skip writing back the return value.
+- `[FACT]` Calling `return_value:set(true)` in Lua also fails because primitive return types (such as `BoolProperty`) are pushed to Lua as raw primitive values (`boolean`), not `LocalUnrealParam` wrapper objects.
+- `[POLICY]` Never rely on Lua `return <value>` or `return_value:set()` to override return values of parameterless native functions in UE4SS 3.0.1. Manipulate state directly via game data structures, reflected properties, or pre-hook arguments.
+
 ---
 
 ## 3. Verified Lua API & Hooking Patterns (Golden Paths)
@@ -135,3 +141,5 @@ In `mods.txt`, the mod must be explicitly enabled:
 | Adding dummy parameters to `IsPlayable` hook | Declared with only `ReturnValue` `[LOCAL: lines 473-474]` | Hook only `ReturnValue` |
 | Calling `ExecuteInGameThreadWithDelay` | 4.x API; does not exist in build `4e5461c` `[SZ:WARNING]` | Use `ExecuteInGameThread` or `ExecuteWithDelay` |
 | Putting development scripts directly in `Win64\Mods` | Unverum Build wipes `Win64\Mods` completely `[SZ:§4]` | Keep source in repo and stage for deployment |
+| Relying on Lua `return <val>` to override parameterless native hooks | C++ bug in `LuaMod.cpp` L315: null `TheStack.Locals()` skips return write-back | Mutate game state or object properties directly |
+| Calling `:set()` on primitive hook parameters (bool, int) | Pushed as primitive Lua types, not `LocalUnrealParam` wrapper | Check type and use direct assignment or object methods |

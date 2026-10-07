@@ -88,6 +88,21 @@ fn test_registry_transformation_integrity() {
     // Verify package and object imports
     assert_eq!(imports[27]["ObjectName"], NEW_PACKAGE_NAME);
     assert_eq!(imports[28]["ObjectName"], NEW_OBJECT_NAME);
+
+    // Verify DefaultOpenCharacter is unlocked for Complete Story (0000_00)
+    let export_data = reg_ast
+        .pointer("/Exports/0/Data")
+        .and_then(Value::as_array)
+        .expect("Export Data missing");
+    let default_char_prop = export_data
+        .iter()
+        .find(|p| p.get("Name").and_then(Value::as_str) == Some("DefaultOpenCharacter"))
+        .expect("DefaultOpenCharacter property missing");
+    let default_char = default_char_prop
+        .pointer("/Value/0/Value")
+        .and_then(Value::as_str)
+        .expect("DefaultOpenCharacter key missing");
+    assert_eq!(default_char, ROUTE_KEY);
 }
 
 #[test]
@@ -121,7 +136,6 @@ fn test_fail_hard_on_malformed_json_zero_mocks() {
 
     let res1 = transform_character_ast(&mut empty_ast);
     assert!(res1.is_err(), "Must fail hard on empty character AST");
-
     let res2 = transform_registry_ast(&mut empty_ast);
     assert!(res2.is_err(), "Must fail hard on empty registry AST");
 

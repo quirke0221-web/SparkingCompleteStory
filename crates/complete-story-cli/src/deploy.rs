@@ -1,7 +1,6 @@
 use crate::config::Config;
 use crate::container::ContainerArtifacts;
 use anyhow::{bail, Context, Result};
-use std::path::Path;
 
 pub fn deploy_to_game(config: &Config, containers: &ContainerArtifacts) -> Result<()> {
     if !config.steam_game_root.exists() {
@@ -33,30 +32,54 @@ pub fn deploy_to_game(config: &Config, containers: &ContainerArtifacts) -> Resul
         }
     }
 
-    // 2. Deploy UE4SS Runtime Mod to Binaries/Win64/Mods/CompleteStory/
-    if config.runtime_mod_src.exists() {
-        std::fs::create_dir_all(&config.target_ue4ss_mod_dir)
-            .with_context(|| format!("Failed to create UE4SS mods directory at {:?}", config.target_ue4ss_mod_dir))?;
+    // 2. Build and Deploy Native Runtime Plugin (CompleteStory.asi) to plugins/
+    println!("Building native runtime hook (complete-story-runtime)...");
+    let build_status = std::process::Command::new("cargo")
+        .args(["build", "--release", "-p", "complete-story-runtime"])
+        .current_dir(&config.project_root)
+        .status()
+        .context("Failed to execute cargo build for complete-story-runtime")?;
 
-        copy_directory_recursive(&config.runtime_mod_src, &config.target_ue4ss_mod_dir)?;
+    if !build_status.success() {
+        bail!("Failed to compile complete-story-runtime native plugin");
     }
 
-    Ok(())
-}
-
-fn copy_directory_recursive(src: &Path, dest: &Path) -> Result<()> {
-    for entry in std::fs::read_dir(src)? {
-        let entry = entry?;
-        let path = entry.path();
-        let file_name = entry.file_name();
-        let target = dest.join(file_name);
-
-        if path.is_dir() {
-            std::fs::create_dir_all(&target)?;
-            copy_directory_recursive(&path, &target)?;
-        } else {
-            std::fs::copy(&path, &target)?;
-        }
+    if !config.runtime_dll_release.exists() {
+        bail!(
+            "Compiled runtime DLL not found at {:?}",
+            config.runtime_dll_release
+        );
     }
+
+    std::fs::create_dir_all(&config.target_plugins_dir).with_context(|| {
+        format!(
+            "Failed to create plugins directory at {:?}",
+            config.target_plugins_dir
+        )
+    })?;
+
+    let asi_dest = config.target_plugins_dir.join("CompleteStory.asi");
+    if let Err(_) = std::fs::copy(&config.runtime_dll_release, &asi_dest) {
+        let old_backup = config.target_plugins_dir.join("CompleteStory.asi.old");
+        let _ = std::fs::remove_file(&old_backup);
+        let _ = std::fs::rename(&asi_dest, &old_backup);
+        std::fs::copy(&config.runtime_dll_release, &asi_dest)
+            .with_context(|| format!("Failed to copy CompleteStory.asi to {:?}", asi_dest))?;
+    }
+
+    let asi_len = std::fs::metadata(&asi_dest)?.len();
+    if asi_len == 0 {
+        bail!("Deployed CompleteStory.asi is empty");
+    }
+    println!(
+        "Deployed CompleteStory.asi to {:?} ({} bytes)",
+        asi_dest, asi_len
+    );
+
+    // 3. Clean up legacy UE4SS Lua mod if present to avoid conflicts
+    if config.target_ue4ss_mod_dir.exists() {
+        let _ = std::fs::remove_dir_all(&config.target_ue4ss_mod_dir);
+    }
+
     Ok(())
 }

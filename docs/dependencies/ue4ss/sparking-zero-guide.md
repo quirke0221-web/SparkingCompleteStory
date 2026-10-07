@@ -67,9 +67,12 @@ Labels (see `AGENTS.md` §1.3):
   Which proxy DLL our manual install uses is not recorded here, so whether it is in that list is unverified.
 - `[HYPOTHESIS]` Unverum's bundled UE4SS may differ from the `4e5461c` build we tested. Its version is unknown.
 
-## 5. Not Yet Verified (do not present as fact)
+## 5. Verified Post-Hook Return Value Limitations
+- `[FACT]` `IsPlayable` and `IsModeStart` are parameterless native functions (`GetNumParms() == 1` with 0 input parameters).
+- `[FACT]` In RE-UE4SS `4e5461c`, `RegisterHook` post-callback `return <value>` cannot override return values of parameterless native functions due to `context.TheStack.Locals()` being null in `LuaMod.cpp` line 315, which prevents `lua_data.return_property` assignment and causes `process_return_value()` (line 239) to skip write-back.
+- `[FACT]` Boolean return values are passed to post-callbacks as raw Lua booleans, not objects with `:set()`. Calling `:set()` on them is invalid.
+- `[POLICY]` Control flow and playability must be managed by mutating live game data structures or object properties directly, not by relying on post-hook return value overrides.
 
-- Which `IsPlayable` return value or side effect would unlock the 13th entry without crashing.
-- Whether any post-callback (`/Script/` callback 2) pattern is safe in this game.
-- Lua mod folder layout for this build: read [`upstream-creating-a-lua-mod.md`](upstream-creating-a-lua-mod.md)
-  before stating it.
+## 6. Not Yet Verified (do not present as fact)
+- Exact property path in memory connecting `WBP_GRP_AI_CharacterSelect_C` or `SSDragonAdventureIFCSManager` to active character unlock display.
+

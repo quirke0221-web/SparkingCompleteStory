@@ -15,6 +15,9 @@ pub struct Config {
     pub dist_dir: PathBuf,
     pub runtime_mod_src: PathBuf,
     pub target_paks_mod_dir: PathBuf,
+    pub target_plugins_dir: PathBuf,
+    pub runtime_dll_release: PathBuf,
+    pub target_runtime_log: PathBuf,
     pub target_ue4ss_mod_dir: PathBuf,
     pub target_ue4ss_log: PathBuf,
 }
@@ -61,6 +64,23 @@ impl Config {
             .join("Paks")
             .join("~mods");
 
+        let target_plugins_dir = steam_game_root
+            .join("SparkingZERO")
+            .join("Binaries")
+            .join("Win64")
+            .join("plugins");
+
+        let runtime_dll_release = build_dir
+            .join("target")
+            .join("release")
+            .join("complete_story_runtime.dll");
+
+        let target_runtime_log = steam_game_root
+            .join("SparkingZERO")
+            .join("Binaries")
+            .join("Win64")
+            .join("CompleteStoryRuntime.log");
+
         let target_ue4ss_mod_dir = steam_game_root
             .join("SparkingZERO")
             .join("Binaries")
@@ -87,6 +107,9 @@ impl Config {
             dist_dir,
             runtime_mod_src,
             target_paks_mod_dir,
+            target_plugins_dir,
+            runtime_dll_release,
+            target_runtime_log,
             target_ue4ss_mod_dir,
             target_ue4ss_log,
         })

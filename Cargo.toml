@@ -1,5 +1,6 @@
 [workspace]
 members = [
     "crates/complete-story-cli",
+    "crates/complete-story-runtime",
 ]
 resolver = "2"

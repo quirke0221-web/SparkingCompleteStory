@@ -144,6 +144,17 @@ pub fn transform_registry_ast(root: &mut Value) -> Result<()> {
             bail!("Postcondition failed: expected 13 records, found {}", records_val.len());
         }
 
+        // 5. Update DefaultOpenCharacter to ROUTE_KEY so the campaign is natively unlocked
+        let default_char_prop = export_data
+            .iter_mut()
+            .find(|p| p.get("Name").and_then(Value::as_str) == Some("DefaultOpenCharacter"))
+            .context("Missing 'DefaultOpenCharacter' property in registry export")?;
+
+        let default_char_key = default_char_prop
+            .pointer_mut("/Value/0/Value")
+            .context("Missing '/Value/0/Value' in DefaultOpenCharacter")?;
+        *default_char_key = Value::String(ROUTE_KEY.to_string());
+
         let deps = exports[0]
             .get_mut("CreateBeforeCreateDependencies")
             .and_then(Value::as_array_mut)

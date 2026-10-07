@@ -136,13 +136,25 @@ fn run_deploy(config: &Config) -> Result<()> {
 }
 
 fn run_logs(config: &Config) -> Result<()> {
-    if !config.target_ue4ss_log.exists() {
-        println!("No ue4ss.log found at {:?}", config.target_ue4ss_log);
-        return Ok(());
+    if config.target_runtime_log.exists() {
+        println!("=== CompleteStoryRuntime.log ({:?}) ===", config.target_runtime_log);
+        let content = std::fs::read_to_string(&config.target_runtime_log)?;
+        for line in content.lines().rev().take(50).collect::<Vec<_>>().into_iter().rev() {
+            println!("{}", line);
+        }
+        println!();
+    } else {
+        println!("No CompleteStoryRuntime.log found at {:?}", config.target_runtime_log);
     }
-    let content = std::fs::read_to_string(&config.target_ue4ss_log)?;
-    for line in content.lines().rev().take(50).collect::<Vec<_>>().into_iter().rev() {
-        println!("{}", line);
+
+    if config.target_ue4ss_log.exists() {
+        println!("=== ue4ss.log ({:?}) ===", config.target_ue4ss_log);
+        let content = std::fs::read_to_string(&config.target_ue4ss_log)?;
+        for line in content.lines().rev().take(30).collect::<Vec<_>>().into_iter().rev() {
+            println!("{}", line);
+        }
+    } else {
+        println!("No ue4ss.log found at {:?}", config.target_ue4ss_log);
     }
     Ok(())
 }
