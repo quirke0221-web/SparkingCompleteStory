@@ -44,15 +44,17 @@ pub fn transform_character_ast(root: &mut Value) -> Result<()> {
             bail!("Character data payload too small: {} bytes < 50", bytes.len());
         }
 
-        // Invariant FText (Flags=2 CultureInvariant, HistoryType=-1 None)
+        // FText with ETextHistoryType::Base (Flags=0, HistoryType=0, Namespace="", Key="", SourceString="Complete Story")
         let name_bytes = format!("{}\0", CUSTOM_DISPLAY_NAME).into_bytes();
-        let mut new_ftext = Vec::with_capacity(9 + name_bytes.len());
-        new_ftext.extend_from_slice(&2u32.to_le_bytes()); // Flags = 2
-        new_ftext.push(0xFF); // HistoryType = -1
-        new_ftext.extend_from_slice(&(name_bytes.len() as i32).to_le_bytes()); // Length
+        let mut new_ftext = Vec::with_capacity(17 + name_bytes.len());
+        new_ftext.extend_from_slice(&0u32.to_le_bytes()); // Flags = 0
+        new_ftext.push(0x00); // HistoryType = 0 (Base)
+        new_ftext.extend_from_slice(&0i32.to_le_bytes()); // Namespace length = 0
+        new_ftext.extend_from_slice(&0i32.to_le_bytes()); // Key length = 0
+        new_ftext.extend_from_slice(&(name_bytes.len() as i32).to_le_bytes()); // SourceString length = 15
         new_ftext.extend_from_slice(&name_bytes); // "Complete Story\0"
 
-        // Splice: Header (0..8) + new_ftext + Tail (50..)
+        // Splice: Header (0..8) + new_ftext (32 bytes) + Tail (50..)
         let mut new_payload = Vec::with_capacity(8 + new_ftext.len() + bytes.len() - 50);
         new_payload.extend_from_slice(&bytes[..8]);
         new_payload.extend_from_slice(&new_ftext);
@@ -97,7 +99,7 @@ pub fn transform_character_ast(root: &mut Value) -> Result<()> {
     Ok(())
 }
 
-fn base64_decode(input: &str) -> Result<Vec<u8>> {
+pub fn base64_decode(input: &str) -> Result<Vec<u8>> {
     let mut out = Vec::new();
     let mut buf: u32 = 0;
     let mut bits = 0;
@@ -180,15 +182,17 @@ mod tests {
         transform_character_ast(&mut ast).expect("Transform should succeed");
 
         assert_eq!(ast["Exports"][0]["ObjectName"], "DAIF_CharaData_CompleteStory");
-        assert_eq!(ast["Exports"][0]["SerialSize"], 346);
+        assert_eq!(ast["Exports"][0]["SerialSize"], 354);
 
         let new_b64 = ast["Exports"][0]["Data"].as_str().unwrap();
         let new_bytes = base64_decode(new_b64).unwrap();
-        assert_eq!(new_bytes.len(), 346);
+        assert_eq!(new_bytes.len(), 354);
         assert_eq!(&new_bytes[0..8], &[0, 2, 1, 6, 1, 10, 2, 15]);
-        assert_eq!(&new_bytes[8..12], &[2, 0, 0, 0]); // Flags = 2
-        assert_eq!(new_bytes[12], 0xFF); // HistoryType = None
-        assert_eq!(&new_bytes[13..17], &[15, 0, 0, 0]); // Length = 15
-        assert_eq!(&new_bytes[17..32], b"Complete Story\0");
+        assert_eq!(&new_bytes[8..12], &[0, 0, 0, 0]); // Flags = 0
+        assert_eq!(new_bytes[12], 0x00); // HistoryType = Base (0)
+        assert_eq!(&new_bytes[13..17], &[0, 0, 0, 0]); // Namespace length = 0
+        assert_eq!(&new_bytes[17..21], &[0, 0, 0, 0]); // Key length = 0
+        assert_eq!(&new_bytes[21..25], &[15, 0, 0, 0]); // SourceString length = 15
+        assert_eq!(&new_bytes[25..40], b"Complete Story\0");
     }
 }

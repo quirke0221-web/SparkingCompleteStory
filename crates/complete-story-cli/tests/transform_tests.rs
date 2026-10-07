@@ -120,12 +120,16 @@ fn test_character_transformation_name_payload_and_tail_preservation() {
 
     let exports = char_ast.get("Exports").and_then(Value::as_array).unwrap();
     assert_eq!(exports[0]["ObjectName"], NEW_OBJECT_NAME);
-    assert_eq!(exports[0]["SerialSize"], 346);
+    assert_eq!(exports[0]["SerialSize"], 354);
 
     // Verify mutated payload: CharacterName is "Complete Story", and tail is preserved
     let transformed_b64 = exports[0]["Data"].as_str().unwrap();
     assert_ne!(original_b64, transformed_b64, "Data payload must be updated with Complete Story name");
-    assert!(transformed_b64.contains("Db21wbGV0ZSBTdG9yeQ"), "Must contain base64 Complete Story");
+
+    let decoded = complete_story_cli::transform::character::base64_decode(transformed_b64)
+        .expect("Base64 decode must succeed");
+    assert_eq!(decoded.len(), 354);
+    assert_eq!(&decoded[25..40], b"Complete Story\0");
 }
 
 #[test]
